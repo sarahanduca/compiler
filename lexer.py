@@ -1,6 +1,22 @@
 import ply.lex as lex
 
-tokens = (
+reserved = {
+    'if': 'IF',
+    'else': 'ELSE',
+    'while': 'WHILE',
+    'for': 'FOR',
+    'bool': 'BOOL',
+    'print': 'PRINT',
+    'main': 'MAIN',
+    'true': 'TRUE',
+    'false': 'FALSE',
+    'return': 'RETURN',
+    'and': 'AND',
+    'or': 'OR',
+    'not': 'NOT'
+}
+
+tokens = [
     'NUMBER',
     'PLUS',
     'MINUS',
@@ -19,26 +35,14 @@ tokens = (
     'NOTEQUAL',
     'GREATEREQUAL',
     'LESSEQUAL',
-    'IF',
-    'ELSE',
-    'WHILE',
-    'FOR',
     'INT',
     'FLOAT',
     'STRING',
-    'BOOL',
     'ID',
-    'NOT',
-    'RETURN',
-    'AND',
-    'OR',
-    'MAIN',
     'LSQUAREB',
     'RSQUAREB',
-    'TRUE',
-    'FALSE',
     'ADRESS'
-)
+] + list(reserved.values())
 
 t_PLUS = r'\+'
 t_MINUS = r'\-'
@@ -69,36 +73,8 @@ t_COMMA = r'\,'
 t_SEMICOLON = r'\;'
 
 # A regular expression rule with some action code
-
-
 def t_INT(t):
     r'int'
-    return t
-
-
-def t_PRINT(t):
-    r'\d+'
-    t.value = int(t.value)
-    return t
-
-
-def t_IF(t):
-    r'if'
-    return t
-
-
-def t_ELSE(t):
-    r'else'
-    return t
-
-
-def t_WHILE(t):
-    r'while'
-    return t
-
-
-def t_FOR(t):
-    r'for'
     return t
 
 
@@ -113,49 +89,28 @@ def t_FLOAT(t):
     return t
 
 
-def t_BOOL(t):
-    r'bool'
-    return t
-
-
-def t_TRUE(t):
-    r'true'
-    return t
-
-
-def t_FALSE(t):
-    r'false'
-    return t
-
-
 def t_STRING(t):
-    r'string'
-    return t
-
-
-def t_ID(t):
-    r'id'
-    return t
-
-
-def t_RETURN(t):
-    r'return'
+    r'\"([^\']{2,2})\"'
     return t
 
 
 # Define a rule so we can track line numbers
-
-
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
 
 # A string containing ignored characters (spaces and tabs)
-t_ignore = ' \t'
+t_ignore = ' \t\r\f\v'
 
-# Error handling rule
+def t_comment(t):
+    r'\^([^#]*)'
+    pass
 
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value,'ID')
+    return t
 
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
@@ -164,10 +119,10 @@ def t_error(t):
 
 # Build the lexer
 lexer = lex.lex()
-
+string = "just tell me"
 
 # Give the lexer some input
-lexer.input("int i = 3 ")
+lexer.input("if ( x > 5 ) { return x * 7 +  }")
 
 # Tokenize
 while True:
