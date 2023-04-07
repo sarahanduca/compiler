@@ -17,7 +17,6 @@ class LexicalAnalysis(object):
         'return': 'RETURN',
         'and': 'AND',
         'or': 'OR',
-        'not': 'NOT',
         'int': 'INT',
         'float': 'FLOAT',
         'string': 'STRING',
@@ -45,6 +44,7 @@ class LexicalAnalysis(object):
         'ID',
         'LSQUAREB',
         'RSQUAREB',
+        'NOT',
         'ADRESS'
     ] + list(reserved.values())
 
@@ -55,8 +55,8 @@ class LexicalAnalysis(object):
     t_GREATER = r'\>'
     t_LESS = r'\<'
     t_EQUAL = r'\=='
-    t_ADRESS = r'\='
     t_NOTEQUAL = r'\!='
+    t_ADRESS = r'\='
     t_GREATEREQUAL = r'\>='
     t_LESSEQUAL = r'\<='
     t_NOT = r'\!'
@@ -113,4 +113,3 @@ class LexicalAnalysis(object):
             if not tok: 
                 break
             print(tok)
-
