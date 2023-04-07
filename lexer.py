@@ -2,7 +2,6 @@ import ply.lex as lex
 
 class LexicalAnalysis(object):
     def __init__(self):
-        self.lexer = None
         self.build()
 
     reserved = {
@@ -115,5 +114,3 @@ class LexicalAnalysis(object):
                 break
             print(tok)
 
-t = LexicalAnalysis()
-t.test("if (a == 1) { print(a); }")
