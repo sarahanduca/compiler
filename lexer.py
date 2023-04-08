@@ -3,10 +3,12 @@ import ply.lex as lex
 class LexicalAnalysis(object):
     def __init__(self):
         self.build()
+        self.current_line = 1
 
     reserved = {
         'if': 'IF',
         'else': 'ELSE',
+        'elseif': 'ELSEIF',
         'while': 'WHILE',
         'for': 'FOR',
         'bool': 'BOOL',
@@ -61,7 +63,6 @@ class LexicalAnalysis(object):
     t_LESSEQUAL = r'\<='
     t_NOT = r'\!'
 
-
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
 
@@ -92,10 +93,10 @@ class LexicalAnalysis(object):
         r'\#.*'
         pass
 
-
     def t_newline(self, t):
-        r'\n+'
-        t.lexer.lineno += len(t.value)
+        r'\n\s*'
+        self.current_line += t.value.count('\n')
+        self.lexer.lineno = self.current_line
 
     t_ignore = ' \t\r\f\v'
 
