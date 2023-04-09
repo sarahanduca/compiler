@@ -5,30 +5,43 @@ tokens = LexicalAnalysis()
 tokens = tokens.tokens
 
 precedence = (
+    ("left", "OR"),
+    ("left", "AND"),
+    ("left", "NOT"),
+    (
+        "nonassoc",
+        "EQUAL",
+        "GREATER",
+        "LESS",
+        "GREATEREQUAL",
+        "LESSEQUAL",
+    ),
     ("left", "PLUS", "MINUS"),
     ("left", "TIMES", "DIVIDE"),
 )
 
 
 def p_start(p):
-    "main : INT MAIN LPAREN RPAREN LBRAKETS statement RBRAKETS"
-    p[0] = p[6]
+    "main : INT MAIN LPAREN RPAREN scope"
+    p[0] = p[5]
     pass
 
 
+def p_scope(p):
+    """
+    scope : LBRAKETS statement RBRAKETS
+        | LBRAKETS expression RBRAKETS
+
+    """
+    p[0] = p[2]
+
+
 def p_op_expression(p):
-    """expression : expression PLUS term
-    | expression MINUS term
-    | expression TIMES term
-    | expression DIVIDE term
-    | expression GREATER term
-    | expression LESS term
-    | expression EQUAL term
-    | expression NOTEQUAL term
-    | expression GREATEREQUAL term
-    | expression LESSEQUAL term
-    | expression ADRESS term
-    | expression NOT term"""
+    """expression : expression PLUS expression
+    | expression MINUS expression
+    | expression TIMES expression
+    | expression DIVIDE expression
+    | LPAREN expression RPAREN"""
 
     if p[2] == "+":
         p[0] = p[1] + p[3]
@@ -42,29 +55,8 @@ def p_op_expression(p):
     elif p[2] == "/":
         p[0] = p[1] / p[3]
 
-    elif p[2] == ">":
-        p[0] = p[1] > p[3]
-
-    elif p[2] == "<":
-        p[0] = p[1] < p[3]
-
-    elif p[2] == "==":
-        p[0] = p[1] == p[3]
-
-    elif p[2] == "!=":
-        p[0] = p[1] != p[3]
-
-    elif p[2] == ">=":
-        p[0] = p[1] >= p[3]
-
-    elif p[2] == "<=":
-        p[0] = p[1] <= p[3]
-
-    elif p[2] == "=":
-        p[0] = p[1] = p[3]
-
-    elif p[2] == "!":
-        p[0] = p[1] != p[3]
+    else:
+        p[0] = p[2]
 
 
 def p_expression_term(p):
@@ -72,26 +64,64 @@ def p_expression_term(p):
     p[0] = p[1]
 
 
-# def p_condition(p):
-#     """
-#     condition : expression OR expression
-#         | expression NOT expression
-#         | expression AND expression
-#         | expression EQUAL expression
-#         | condition OR condition
-#         | condition NOT condition
-#         | condition AND condition
-#         | expression NOTEQUAL expression
-#         | expression GREATER expression
-#         | expression LESSER expression
-#         | expression GREATEREQUAL expression
-#         | expression LESSEQUAL expression
-#         | LPAREN condition RPAREN
-#         | NOT condition
+def p_term(p):
+    """
+    term : type ID
+    """
+    p[0] = p[2]
 
-#     """
-#     p[0] = p[6]
-#     pass
+
+def p_type(p):
+    """
+    type : INT
+        | FLOAT
+        | STRING
+    """
+
+    p[0] = p[1]
+    pass
+
+
+def p_return_statement(p):
+    """
+    return_statement : RETURN expression SEMICOLON
+                    | RETURN SEMICOLON
+    """
+
+    p[0] = p[2]
+
+
+def p_adress(p):
+    """
+    adress : term ADRESS expression SEMICOLON
+            | term ADRESS term SEMICOLON
+            | term ADRESS NUMBER SEMICOLON
+            | term ADRESS LITSTRING SEMICOLON
+    """
+
+    p[0] = p[3]
+
+
+def p_condition(p):
+    """
+    condition : expression OR expression
+        | expression NOT expression
+        | expression AND expression
+        | expression EQUAL expression
+        | condition OR condition
+        | condition NOT condition
+        | condition AND condition
+        | expression NOTEQUAL expression
+        | expression GREATER expression
+        | expression LESS expression
+        | expression GREATEREQUAL expression
+        | expression LESSEQUAL expression
+        | LPAREN condition RPAREN
+        | NOT condition
+
+    """
+    p[0] = p[1]
+    pass
 
 
 def p_statement(p):
@@ -102,18 +132,37 @@ def p_statement(p):
         | for
         | while
         | print
+        | adress
     """
     p[0] = p[1]
 
 
 def p_if(p):
-    """if : IF LPAREN expression RPAREN LBRAKETS statement RBRAKETS"""
-    p[0] = p[6]
+    """if : IF LPAREN condition RPAREN scope
+    | if elseif
+    | if else"""
+
+    if len(p) <= 3:
+        p[0] = p[2]
+    else:
+        p[0] = p[5]
+
+
+def p_elseif(p):
+    """elseif : ELSEIF LPAREN condition RPAREN scope
+    | elseif elseif
+    | elseif else
+    """
+
+    if len(p) <= 3:
+        p[0] = p[2]
+    else:
+        p[0] = p[5]
 
 
 def p_else(p):
-    "else : ELSE LBRAKETS expression RBRAKETS"
-    p[0] = p[3]
+    "else : ELSE scope"
+    p[0] = p[2]
 
 
 def p_for(p):
