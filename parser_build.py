@@ -142,10 +142,7 @@ def p_if(p):
     | if elseif
     | if else"""
 
-    if len(p) <= 3:
-        p[0] = p[2]
-    else:
-        p[0] = p[5]
+    p[0] = p[len(p) - 1]
 
 
 def p_elseif(p):
@@ -154,10 +151,7 @@ def p_elseif(p):
     | elseif else
     """
 
-    if len(p) <= 3:
-        p[0] = p[2]
-    else:
-        p[0] = p[5]
+    p[0] = p[len(p) - 1]
 
 
 def p_else(p):
