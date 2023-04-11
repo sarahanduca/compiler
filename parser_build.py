@@ -65,9 +65,7 @@ def p_expression_term(p):
 
 
 def p_term(p):
-    """
-    term : type ID
-    """
+    "term : type ID"
     p[0] = p[2]
 
 
@@ -85,7 +83,7 @@ def p_type(p):
 def p_return_statement(p):
     """
     return_statement : RETURN expression SEMICOLON
-                    | RETURN SEMICOLON
+                | RETURN SEMICOLON
     """
 
     p[0] = p[2]
@@ -159,16 +157,6 @@ def p_else(p):
     p[0] = p[2]
 
 
-def p_for(p):
-    "for : FOR LPAREN expression SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS"
-    p[0] = p[3]
-
-
-def p_while(p):
-    "while : WHILE LPAREN expression RPAREN LBRAKETS expression RBRAKETS"
-    p[0] = p[3]
-
-
 # TODO print que printa variavel com string print("preco: ", x);
 def p_print(p):
     """print : PRINT LPAREN LITSTRING RPAREN SEMICOLON
@@ -189,6 +177,29 @@ def p_factor_num(p):
 def p_factor_expr(p):
     "factor : LPAREN expression RPAREN"
     p[0] = p[2]
+
+
+def p_for_statement(p):
+    """
+    for_statement : FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression CLOSE_PAREN scope
+    """
+    p[0] = p[9]
+
+
+def p_for_initializer(p):
+    """
+    for_initilizer : assignment
+
+    """
+    p[0] = p[1]
+
+
+def p_while_statement(p):
+    """
+    while_statement : WHILE OPEN_PAREN condition CLOSE_PAREN scope
+
+    """
+    p[0] = p[5]
 
 
 def p_error(p):
