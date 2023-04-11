@@ -80,9 +80,9 @@ def p_type(p):
     pass
 
 
-def p_return_statement(p):
+def p_return(p):
     """
-    return_statement : RETURN expression SEMICOLON
+    return : RETURN expression SEMICOLON
                 | RETURN SEMICOLON
     """
 
@@ -131,6 +131,7 @@ def p_statement(p):
         | while
         | print
         | adress
+        | return
     """
     p[0] = p[1]
 
@@ -179,24 +180,24 @@ def p_factor_expr(p):
     p[0] = p[2]
 
 
-def p_for_statement(p):
+def p_for(p):
     """
-    for_statement : FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression CLOSE_PAREN scope
+    for : FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope
     """
     p[0] = p[9]
 
 
 def p_for_initializer(p):
     """
-    for_initilizer : assignment
+    for_initilizer : adress
 
     """
     p[0] = p[1]
 
 
-def p_while_statement(p):
+def p_while(p):
     """
-    while_statement : WHILE OPEN_PAREN condition CLOSE_PAREN scope
+    while : WHILE LPAREN condition RPAREN scope
 
     """
     p[0] = p[5]

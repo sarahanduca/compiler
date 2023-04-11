@@ -25,8 +25,8 @@ Rule 10    term -> type ID
 Rule 11    type -> INT
 Rule 12    type -> FLOAT
 Rule 13    type -> STRING
-Rule 14    return_statement -> RETURN expression SEMICOLON
-Rule 15    return_statement -> RETURN SEMICOLON
+Rule 14    return -> RETURN expression SEMICOLON
+Rule 15    return -> RETURN SEMICOLON
 Rule 16    adress -> term ADRESS expression SEMICOLON
 Rule 17    adress -> term ADRESS term SEMICOLON
 Rule 18    adress -> term ADRESS NUMBER SEMICOLON
@@ -52,20 +52,22 @@ Rule 37    statement -> for
 Rule 38    statement -> while
 Rule 39    statement -> print
 Rule 40    statement -> adress
-Rule 41    if -> IF LPAREN condition RPAREN scope
-Rule 42    if -> if elseif
-Rule 43    if -> if else
-Rule 44    elseif -> ELSEIF LPAREN condition RPAREN scope
-Rule 45    elseif -> elseif elseif
-Rule 46    elseif -> elseif else
-Rule 47    else -> ELSE scope
-Rule 48    for -> FOR LPAREN expression SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS
-Rule 49    while -> WHILE LPAREN expression RPAREN LBRAKETS expression RBRAKETS
-Rule 50    print -> PRINT LPAREN LITSTRING RPAREN SEMICOLON
-Rule 51    print -> PRINT LPAREN expression RPAREN SEMICOLON
-Rule 52    term -> factor
-Rule 53    factor -> NUMBER
-Rule 54    factor -> LPAREN expression RPAREN
+Rule 41    statement -> return
+Rule 42    if -> IF LPAREN condition RPAREN scope
+Rule 43    if -> if elseif
+Rule 44    if -> if else
+Rule 45    elseif -> ELSEIF LPAREN condition RPAREN scope
+Rule 46    elseif -> elseif elseif
+Rule 47    elseif -> elseif else
+Rule 48    else -> ELSE scope
+Rule 49    print -> PRINT LPAREN LITSTRING RPAREN SEMICOLON
+Rule 50    print -> PRINT LPAREN expression RPAREN SEMICOLON
+Rule 51    term -> factor
+Rule 52    factor -> NUMBER
+Rule 53    factor -> LPAREN expression RPAREN
+Rule 54    for -> FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope
+Rule 55    for_initilizer -> adress
+Rule 56    while -> WHILE LPAREN condition RPAREN scope
 
 Terminals, with rules where they appear
 
@@ -74,56 +76,57 @@ AND                  : 22 26
 BOOL                 : 
 COMMA                : 
 DIVIDE               : 7
-ELSE                 : 47
-ELSEIF               : 44
+ELSE                 : 48
+ELSEIF               : 45
 EQUAL                : 23
 FALSE                : 
 FLOAT                : 12
-FOR                  : 48
+FOR                  : 54
 GREATER              : 28
 GREATEREQUAL         : 30
 ID                   : 10
-IF                   : 41
+IF                   : 42
 INT                  : 1 11
-LBRAKETS             : 2 3 48 49
+LBRAKETS             : 2 3
 LESS                 : 29
 LESSEQUAL            : 31
-LITSTRING            : 19 50
-LPAREN               : 1 8 32 41 44 48 49 50 51 54
+LITSTRING            : 19 49
+LPAREN               : 1 8 32 42 45 49 50 53 54 56
 LSQUAREB             : 
 MAIN                 : 1
 MINUS                : 5
 NOT                  : 21 25 33
 NOTEQUAL             : 27
-NUMBER               : 18 53
+NUMBER               : 18 52
 OR                   : 20 24
 PLUS                 : 4
-PRINT                : 50 51
-RBRAKETS             : 2 3 48 49
+PRINT                : 49 50
+RBRAKETS             : 2 3
 RETURN               : 14 15
-RPAREN               : 1 8 32 41 44 48 49 50 51 54
+RPAREN               : 1 8 32 42 45 49 50 53 54 56
 RSQUAREB             : 
-SEMICOLON            : 14 15 16 17 18 19 34 48 48 50 51
+SEMICOLON            : 14 15 16 17 18 19 34 49 50 54 54
 STRING               : 13
 TIMES                : 6
 TRUE                 : 
-WHILE                : 49
+WHILE                : 56
 error                : 
 
 Nonterminals, with rules where they appear
 
-adress               : 40
-condition            : 24 24 25 25 26 26 32 33 41 44
-else                 : 36 43 46
-elseif               : 42 45 45 46
-expression           : 3 4 4 5 5 6 6 7 7 8 14 16 20 20 21 21 22 22 23 23 27 27 28 28 29 29 30 30 31 31 34 48 48 48 48 49 49 51 54
-factor               : 52
+adress               : 40 55
+condition            : 24 24 25 25 26 26 32 33 42 45 54 56
+else                 : 36 44 47
+elseif               : 43 46 46 47
+expression           : 3 4 4 5 5 6 6 7 7 8 14 16 20 20 21 21 22 22 23 23 27 27 28 28 29 29 30 30 31 31 34 50 53 54
+factor               : 51
 for                  : 37
-if                   : 35 42 43
+for_initilizer       : 54
+if                   : 35 43 44
 main                 : 0
 print                : 39
-return_statement     : 
-scope                : 1 41 44 47
+return               : 41
+scope                : 1 42 45 48 54 56
 statement            : 2
 term                 : 9 16 17 17 18 19
 type                 : 10
@@ -195,42 +198,46 @@ state 7
     (38) statement -> . while
     (39) statement -> . print
     (40) statement -> . adress
+    (41) statement -> . return
     (4) expression -> . expression PLUS expression
     (5) expression -> . expression MINUS expression
     (6) expression -> . expression TIMES expression
     (7) expression -> . expression DIVIDE expression
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
-    (41) if -> . IF LPAREN condition RPAREN scope
-    (42) if -> . if elseif
-    (43) if -> . if else
-    (47) else -> . ELSE scope
-    (48) for -> . FOR LPAREN expression SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS
-    (49) while -> . WHILE LPAREN expression RPAREN LBRAKETS expression RBRAKETS
-    (50) print -> . PRINT LPAREN LITSTRING RPAREN SEMICOLON
-    (51) print -> . PRINT LPAREN expression RPAREN SEMICOLON
+    (42) if -> . IF LPAREN condition RPAREN scope
+    (43) if -> . if elseif
+    (44) if -> . if else
+    (48) else -> . ELSE scope
+    (54) for -> . FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope
+    (56) while -> . WHILE LPAREN condition RPAREN scope
+    (49) print -> . PRINT LPAREN LITSTRING RPAREN SEMICOLON
+    (50) print -> . PRINT LPAREN expression RPAREN SEMICOLON
     (16) adress -> . term ADRESS expression SEMICOLON
     (17) adress -> . term ADRESS term SEMICOLON
     (18) adress -> . term ADRESS NUMBER SEMICOLON
     (19) adress -> . term ADRESS LITSTRING SEMICOLON
+    (14) return -> . RETURN expression SEMICOLON
+    (15) return -> . RETURN SEMICOLON
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    IF              shift and go to state 18
-    ELSE            shift and go to state 19
-    FOR             shift and go to state 20
-    WHILE           shift and go to state 21
-    PRINT           shift and go to state 22
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    IF              shift and go to state 19
+    ELSE            shift and go to state 20
+    FOR             shift and go to state 21
+    WHILE           shift and go to state 22
+    PRINT           shift and go to state 23
+    RETURN          shift and go to state 25
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
     statement                      shift and go to state 8
     expression                     shift and go to state 9
@@ -240,15 +247,16 @@ state 7
     while                          shift and go to state 13
     print                          shift and go to state 14
     adress                         shift and go to state 15
-    term                           shift and go to state 17
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    return                         shift and go to state 16
+    term                           shift and go to state 18
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
 state 8
 
     (2) scope -> LBRAKETS statement . RBRAKETS
 
-    RBRAKETS        shift and go to state 29
+    RBRAKETS        shift and go to state 31
 
 
 state 9
@@ -260,30 +268,30 @@ state 9
     (6) expression -> expression . TIMES expression
     (7) expression -> expression . DIVIDE expression
 
-    RBRAKETS        shift and go to state 30
-    SEMICOLON       shift and go to state 31
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    RBRAKETS        shift and go to state 32
+    SEMICOLON       shift and go to state 33
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
 state 10
 
     (35) statement -> if .
-    (42) if -> if . elseif
-    (43) if -> if . else
-    (44) elseif -> . ELSEIF LPAREN condition RPAREN scope
-    (45) elseif -> . elseif elseif
-    (46) elseif -> . elseif else
-    (47) else -> . ELSE scope
+    (43) if -> if . elseif
+    (44) if -> if . else
+    (45) elseif -> . ELSEIF LPAREN condition RPAREN scope
+    (46) elseif -> . elseif elseif
+    (47) elseif -> . elseif else
+    (48) else -> . ELSE scope
 
     RBRAKETS        reduce using rule 35 (statement -> if .)
-    ELSEIF          shift and go to state 38
-    ELSE            shift and go to state 19
+    ELSEIF          shift and go to state 40
+    ELSE            shift and go to state 20
 
-    elseif                         shift and go to state 36
-    else                           shift and go to state 37
+    elseif                         shift and go to state 38
+    else                           shift and go to state 39
 
 state 11
 
@@ -322,8 +330,15 @@ state 15
 
 state 16
 
+    (41) statement -> return .
+
+    RBRAKETS        reduce using rule 41 (statement -> return .)
+
+
+state 17
+
     (8) expression -> LPAREN . expression RPAREN
-    (54) factor -> LPAREN . expression RPAREN
+    (53) factor -> LPAREN . expression RPAREN
     (4) expression -> . expression PLUS expression
     (5) expression -> . expression MINUS expression
     (6) expression -> . expression TIMES expression
@@ -331,25 +346,25 @@ state 16
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 39
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 41
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 17
+state 18
 
     (9) expression -> term .
     (16) adress -> term . ADRESS expression SEMICOLON
@@ -363,123 +378,153 @@ state 17
     MINUS           reduce using rule 9 (expression -> term .)
     TIMES           reduce using rule 9 (expression -> term .)
     DIVIDE          reduce using rule 9 (expression -> term .)
-    ADRESS          shift and go to state 41
-
-
-state 18
-
-    (41) if -> IF . LPAREN condition RPAREN scope
-
-    LPAREN          shift and go to state 42
+    ADRESS          shift and go to state 43
 
 
 state 19
 
-    (47) else -> ELSE . scope
+    (42) if -> IF . LPAREN condition RPAREN scope
+
+    LPAREN          shift and go to state 44
+
+
+state 20
+
+    (48) else -> ELSE . scope
     (2) scope -> . LBRAKETS statement RBRAKETS
     (3) scope -> . LBRAKETS expression RBRAKETS
 
     LBRAKETS        shift and go to state 7
 
-    scope                          shift and go to state 43
-
-state 20
-
-    (48) for -> FOR . LPAREN expression SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS
-
-    LPAREN          shift and go to state 44
-
+    scope                          shift and go to state 45
 
 state 21
 
-    (49) while -> WHILE . LPAREN expression RPAREN LBRAKETS expression RBRAKETS
-
-    LPAREN          shift and go to state 45
-
-
-state 22
-
-    (50) print -> PRINT . LPAREN LITSTRING RPAREN SEMICOLON
-    (51) print -> PRINT . LPAREN expression RPAREN SEMICOLON
+    (54) for -> FOR . LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope
 
     LPAREN          shift and go to state 46
 
 
+state 22
+
+    (56) while -> WHILE . LPAREN condition RPAREN scope
+
+    LPAREN          shift and go to state 47
+
+
 state 23
 
-    (53) factor -> NUMBER .
+    (49) print -> PRINT . LPAREN LITSTRING RPAREN SEMICOLON
+    (50) print -> PRINT . LPAREN expression RPAREN SEMICOLON
 
-    ADRESS          reduce using rule 53 (factor -> NUMBER .)
-    RBRAKETS        reduce using rule 53 (factor -> NUMBER .)
-    SEMICOLON       reduce using rule 53 (factor -> NUMBER .)
-    PLUS            reduce using rule 53 (factor -> NUMBER .)
-    MINUS           reduce using rule 53 (factor -> NUMBER .)
-    TIMES           reduce using rule 53 (factor -> NUMBER .)
-    DIVIDE          reduce using rule 53 (factor -> NUMBER .)
-    RPAREN          reduce using rule 53 (factor -> NUMBER .)
-    OR              reduce using rule 53 (factor -> NUMBER .)
-    NOT             reduce using rule 53 (factor -> NUMBER .)
-    AND             reduce using rule 53 (factor -> NUMBER .)
-    EQUAL           reduce using rule 53 (factor -> NUMBER .)
-    NOTEQUAL        reduce using rule 53 (factor -> NUMBER .)
-    GREATER         reduce using rule 53 (factor -> NUMBER .)
-    LESS            reduce using rule 53 (factor -> NUMBER .)
-    GREATEREQUAL    reduce using rule 53 (factor -> NUMBER .)
-    LESSEQUAL       reduce using rule 53 (factor -> NUMBER .)
+    LPAREN          shift and go to state 48
 
 
 state 24
 
-    (10) term -> type . ID
+    (52) factor -> NUMBER .
 
-    ID              shift and go to state 47
+    ADRESS          reduce using rule 52 (factor -> NUMBER .)
+    RBRAKETS        reduce using rule 52 (factor -> NUMBER .)
+    SEMICOLON       reduce using rule 52 (factor -> NUMBER .)
+    PLUS            reduce using rule 52 (factor -> NUMBER .)
+    MINUS           reduce using rule 52 (factor -> NUMBER .)
+    TIMES           reduce using rule 52 (factor -> NUMBER .)
+    DIVIDE          reduce using rule 52 (factor -> NUMBER .)
+    RPAREN          reduce using rule 52 (factor -> NUMBER .)
+    OR              reduce using rule 52 (factor -> NUMBER .)
+    NOT             reduce using rule 52 (factor -> NUMBER .)
+    AND             reduce using rule 52 (factor -> NUMBER .)
+    EQUAL           reduce using rule 52 (factor -> NUMBER .)
+    NOTEQUAL        reduce using rule 52 (factor -> NUMBER .)
+    GREATER         reduce using rule 52 (factor -> NUMBER .)
+    LESS            reduce using rule 52 (factor -> NUMBER .)
+    GREATEREQUAL    reduce using rule 52 (factor -> NUMBER .)
+    LESSEQUAL       reduce using rule 52 (factor -> NUMBER .)
 
 
 state 25
 
-    (52) term -> factor .
+    (14) return -> RETURN . expression SEMICOLON
+    (15) return -> RETURN . SEMICOLON
+    (4) expression -> . expression PLUS expression
+    (5) expression -> . expression MINUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression DIVIDE expression
+    (8) expression -> . LPAREN expression RPAREN
+    (9) expression -> . term
+    (10) term -> . type ID
+    (51) term -> . factor
+    (11) type -> . INT
+    (12) type -> . FLOAT
+    (13) type -> . STRING
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    ADRESS          reduce using rule 52 (term -> factor .)
-    RBRAKETS        reduce using rule 52 (term -> factor .)
-    SEMICOLON       reduce using rule 52 (term -> factor .)
-    PLUS            reduce using rule 52 (term -> factor .)
-    MINUS           reduce using rule 52 (term -> factor .)
-    TIMES           reduce using rule 52 (term -> factor .)
-    DIVIDE          reduce using rule 52 (term -> factor .)
-    RPAREN          reduce using rule 52 (term -> factor .)
-    OR              reduce using rule 52 (term -> factor .)
-    NOT             reduce using rule 52 (term -> factor .)
-    AND             reduce using rule 52 (term -> factor .)
-    EQUAL           reduce using rule 52 (term -> factor .)
-    NOTEQUAL        reduce using rule 52 (term -> factor .)
-    GREATER         reduce using rule 52 (term -> factor .)
-    LESS            reduce using rule 52 (term -> factor .)
-    GREATEREQUAL    reduce using rule 52 (term -> factor .)
-    LESSEQUAL       reduce using rule 52 (term -> factor .)
+    SEMICOLON       shift and go to state 50
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
+    expression                     shift and go to state 49
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
 state 26
+
+    (10) term -> type . ID
+
+    ID              shift and go to state 51
+
+
+state 27
+
+    (51) term -> factor .
+
+    ADRESS          reduce using rule 51 (term -> factor .)
+    RBRAKETS        reduce using rule 51 (term -> factor .)
+    SEMICOLON       reduce using rule 51 (term -> factor .)
+    PLUS            reduce using rule 51 (term -> factor .)
+    MINUS           reduce using rule 51 (term -> factor .)
+    TIMES           reduce using rule 51 (term -> factor .)
+    DIVIDE          reduce using rule 51 (term -> factor .)
+    RPAREN          reduce using rule 51 (term -> factor .)
+    OR              reduce using rule 51 (term -> factor .)
+    NOT             reduce using rule 51 (term -> factor .)
+    AND             reduce using rule 51 (term -> factor .)
+    EQUAL           reduce using rule 51 (term -> factor .)
+    NOTEQUAL        reduce using rule 51 (term -> factor .)
+    GREATER         reduce using rule 51 (term -> factor .)
+    LESS            reduce using rule 51 (term -> factor .)
+    GREATEREQUAL    reduce using rule 51 (term -> factor .)
+    LESSEQUAL       reduce using rule 51 (term -> factor .)
+
+
+state 28
 
     (11) type -> INT .
 
     ID              reduce using rule 11 (type -> INT .)
 
 
-state 27
+state 29
 
     (12) type -> FLOAT .
 
     ID              reduce using rule 12 (type -> FLOAT .)
 
 
-state 28
+state 30
 
     (13) type -> STRING .
 
     ID              reduce using rule 13 (type -> STRING .)
 
 
-state 29
+state 31
 
     (2) scope -> LBRAKETS statement RBRAKETS .
 
@@ -489,7 +534,7 @@ state 29
     ELSE            reduce using rule 2 (scope -> LBRAKETS statement RBRAKETS .)
 
 
-state 30
+state 32
 
     (3) scope -> LBRAKETS expression RBRAKETS .
 
@@ -499,14 +544,14 @@ state 30
     ELSE            reduce using rule 3 (scope -> LBRAKETS expression RBRAKETS .)
 
 
-state 31
+state 33
 
     (34) statement -> expression SEMICOLON .
 
     RBRAKETS        reduce using rule 34 (statement -> expression SEMICOLON .)
 
 
-state 32
+state 34
 
     (4) expression -> expression PLUS . expression
     (4) expression -> . expression PLUS expression
@@ -516,25 +561,25 @@ state 32
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 48
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 52
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 33
+state 35
 
     (5) expression -> expression MINUS . expression
     (4) expression -> . expression PLUS expression
@@ -544,25 +589,25 @@ state 33
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 49
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 53
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 34
+state 36
 
     (6) expression -> expression TIMES . expression
     (4) expression -> . expression PLUS expression
@@ -572,25 +617,25 @@ state 34
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 50
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 54
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 35
+state 37
 
     (7) expression -> expression DIVIDE . expression
     (4) expression -> . expression PLUS expression
@@ -600,79 +645,79 @@ state 35
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 51
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
-
-state 36
-
-    (42) if -> if elseif .
-    (45) elseif -> elseif . elseif
-    (46) elseif -> elseif . else
-    (44) elseif -> . ELSEIF LPAREN condition RPAREN scope
-    (45) elseif -> . elseif elseif
-    (46) elseif -> . elseif else
-    (47) else -> . ELSE scope
-
-  ! shift/reduce conflict for ELSEIF resolved as shift
-  ! shift/reduce conflict for ELSE resolved as shift
-    RBRAKETS        reduce using rule 42 (if -> if elseif .)
-    ELSEIF          shift and go to state 38
-    ELSE            shift and go to state 19
-
-  ! ELSEIF          [ reduce using rule 42 (if -> if elseif .) ]
-  ! ELSE            [ reduce using rule 42 (if -> if elseif .) ]
-
-    elseif                         shift and go to state 52
-    else                           shift and go to state 53
-
-state 37
-
-    (43) if -> if else .
-
-    ELSEIF          reduce using rule 43 (if -> if else .)
-    ELSE            reduce using rule 43 (if -> if else .)
-    RBRAKETS        reduce using rule 43 (if -> if else .)
-
+    expression                     shift and go to state 55
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
 state 38
 
-    (44) elseif -> ELSEIF . LPAREN condition RPAREN scope
+    (43) if -> if elseif .
+    (46) elseif -> elseif . elseif
+    (47) elseif -> elseif . else
+    (45) elseif -> . ELSEIF LPAREN condition RPAREN scope
+    (46) elseif -> . elseif elseif
+    (47) elseif -> . elseif else
+    (48) else -> . ELSE scope
 
-    LPAREN          shift and go to state 54
+  ! shift/reduce conflict for ELSEIF resolved as shift
+  ! shift/reduce conflict for ELSE resolved as shift
+    RBRAKETS        reduce using rule 43 (if -> if elseif .)
+    ELSEIF          shift and go to state 40
+    ELSE            shift and go to state 20
 
+  ! ELSEIF          [ reduce using rule 43 (if -> if elseif .) ]
+  ! ELSE            [ reduce using rule 43 (if -> if elseif .) ]
+
+    elseif                         shift and go to state 56
+    else                           shift and go to state 57
 
 state 39
 
+    (44) if -> if else .
+
+    ELSEIF          reduce using rule 44 (if -> if else .)
+    ELSE            reduce using rule 44 (if -> if else .)
+    RBRAKETS        reduce using rule 44 (if -> if else .)
+
+
+state 40
+
+    (45) elseif -> ELSEIF . LPAREN condition RPAREN scope
+
+    LPAREN          shift and go to state 58
+
+
+state 41
+
     (8) expression -> LPAREN expression . RPAREN
-    (54) factor -> LPAREN expression . RPAREN
+    (53) factor -> LPAREN expression . RPAREN
     (4) expression -> expression . PLUS expression
     (5) expression -> expression . MINUS expression
     (6) expression -> expression . TIMES expression
     (7) expression -> expression . DIVIDE expression
 
-    RPAREN          shift and go to state 55
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    RPAREN          shift and go to state 59
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 40
+state 42
 
     (9) expression -> term .
 
@@ -681,8 +726,8 @@ state 40
     MINUS           reduce using rule 9 (expression -> term .)
     TIMES           reduce using rule 9 (expression -> term .)
     DIVIDE          reduce using rule 9 (expression -> term .)
-    RBRAKETS        reduce using rule 9 (expression -> term .)
     SEMICOLON       reduce using rule 9 (expression -> term .)
+    RBRAKETS        reduce using rule 9 (expression -> term .)
     OR              reduce using rule 9 (expression -> term .)
     NOT             reduce using rule 9 (expression -> term .)
     AND             reduce using rule 9 (expression -> term .)
@@ -694,7 +739,7 @@ state 40
     LESSEQUAL       reduce using rule 9 (expression -> term .)
 
 
-state 41
+state 43
 
     (16) adress -> term ADRESS . expression SEMICOLON
     (17) adress -> term ADRESS . term SEMICOLON
@@ -707,28 +752,28 @@ state 41
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    NUMBER          shift and go to state 58
-    LITSTRING       shift and go to state 59
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
+    NUMBER          shift and go to state 62
+    LITSTRING       shift and go to state 63
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
 
-    term                           shift and go to state 56
-    expression                     shift and go to state 57
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    term                           shift and go to state 60
+    expression                     shift and go to state 61
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 42
+state 44
 
-    (41) if -> IF LPAREN . condition RPAREN scope
+    (42) if -> IF LPAREN . condition RPAREN scope
     (20) condition -> . expression OR expression
     (21) condition -> . expression NOT expression
     (22) condition -> . expression AND expression
@@ -750,95 +795,80 @@ state 42
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 60
-    NOT             shift and go to state 63
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 64
+    NOT             shift and go to state 67
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    condition                      shift and go to state 61
-    expression                     shift and go to state 62
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
-
-state 43
-
-    (47) else -> ELSE scope .
-
-    RBRAKETS        reduce using rule 47 (else -> ELSE scope .)
-    ELSEIF          reduce using rule 47 (else -> ELSE scope .)
-    ELSE            reduce using rule 47 (else -> ELSE scope .)
-
-
-state 44
-
-    (48) for -> FOR LPAREN . expression SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS
-    (4) expression -> . expression PLUS expression
-    (5) expression -> . expression MINUS expression
-    (6) expression -> . expression TIMES expression
-    (7) expression -> . expression DIVIDE expression
-    (8) expression -> . LPAREN expression RPAREN
-    (9) expression -> . term
-    (10) term -> . type ID
-    (52) term -> . factor
-    (11) type -> . INT
-    (12) type -> . FLOAT
-    (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
-
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
-
-    expression                     shift and go to state 64
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    condition                      shift and go to state 65
+    expression                     shift and go to state 66
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
 state 45
 
-    (49) while -> WHILE LPAREN . expression RPAREN LBRAKETS expression RBRAKETS
-    (4) expression -> . expression PLUS expression
-    (5) expression -> . expression MINUS expression
-    (6) expression -> . expression TIMES expression
-    (7) expression -> . expression DIVIDE expression
-    (8) expression -> . LPAREN expression RPAREN
-    (9) expression -> . term
-    (10) term -> . type ID
-    (52) term -> . factor
-    (11) type -> . INT
-    (12) type -> . FLOAT
-    (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (48) else -> ELSE scope .
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    RBRAKETS        reduce using rule 48 (else -> ELSE scope .)
+    ELSEIF          reduce using rule 48 (else -> ELSE scope .)
+    ELSE            reduce using rule 48 (else -> ELSE scope .)
 
-    expression                     shift and go to state 65
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
 
 state 46
 
-    (50) print -> PRINT LPAREN . LITSTRING RPAREN SEMICOLON
-    (51) print -> PRINT LPAREN . expression RPAREN SEMICOLON
+    (54) for -> FOR LPAREN . for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope
+    (55) for_initilizer -> . adress
+    (16) adress -> . term ADRESS expression SEMICOLON
+    (17) adress -> . term ADRESS term SEMICOLON
+    (18) adress -> . term ADRESS NUMBER SEMICOLON
+    (19) adress -> . term ADRESS LITSTRING SEMICOLON
+    (10) term -> . type ID
+    (51) term -> . factor
+    (11) type -> . INT
+    (12) type -> . FLOAT
+    (13) type -> . STRING
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
+
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
+    LPAREN          shift and go to state 68
+
+    for_initilizer                 shift and go to state 69
+    adress                         shift and go to state 70
+    term                           shift and go to state 71
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
+
+state 47
+
+    (56) while -> WHILE LPAREN . condition RPAREN scope
+    (20) condition -> . expression OR expression
+    (21) condition -> . expression NOT expression
+    (22) condition -> . expression AND expression
+    (23) condition -> . expression EQUAL expression
+    (24) condition -> . condition OR condition
+    (25) condition -> . condition NOT condition
+    (26) condition -> . condition AND condition
+    (27) condition -> . expression NOTEQUAL expression
+    (28) condition -> . expression GREATER expression
+    (29) condition -> . expression LESS expression
+    (30) condition -> . expression GREATEREQUAL expression
+    (31) condition -> . expression LESSEQUAL expression
+    (32) condition -> . LPAREN condition RPAREN
+    (33) condition -> . NOT condition
     (4) expression -> . expression PLUS expression
     (5) expression -> . expression MINUS expression
     (6) expression -> . expression TIMES expression
@@ -846,26 +876,79 @@ state 46
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LITSTRING       shift and go to state 66
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 64
+    NOT             shift and go to state 67
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 67
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    condition                      shift and go to state 72
+    expression                     shift and go to state 66
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 47
+state 48
+
+    (49) print -> PRINT LPAREN . LITSTRING RPAREN SEMICOLON
+    (50) print -> PRINT LPAREN . expression RPAREN SEMICOLON
+    (4) expression -> . expression PLUS expression
+    (5) expression -> . expression MINUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression DIVIDE expression
+    (8) expression -> . LPAREN expression RPAREN
+    (9) expression -> . term
+    (10) term -> . type ID
+    (51) term -> . factor
+    (11) type -> . INT
+    (12) type -> . FLOAT
+    (13) type -> . STRING
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
+
+    LITSTRING       shift and go to state 73
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
+
+    expression                     shift and go to state 74
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
+
+state 49
+
+    (14) return -> RETURN expression . SEMICOLON
+    (4) expression -> expression . PLUS expression
+    (5) expression -> expression . MINUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . DIVIDE expression
+
+    SEMICOLON       shift and go to state 75
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+
+
+state 50
+
+    (15) return -> RETURN SEMICOLON .
+
+    RBRAKETS        reduce using rule 15 (return -> RETURN SEMICOLON .)
+
+
+state 51
 
     (10) term -> type ID .
 
@@ -888,7 +971,7 @@ state 47
     LESSEQUAL       reduce using rule 10 (term -> type ID .)
 
 
-state 48
+state 52
 
     (4) expression -> expression PLUS expression .
     (4) expression -> expression . PLUS expression
@@ -910,16 +993,16 @@ state 48
     LESS            reduce using rule 4 (expression -> expression PLUS expression .)
     GREATEREQUAL    reduce using rule 4 (expression -> expression PLUS expression .)
     LESSEQUAL       reduce using rule 4 (expression -> expression PLUS expression .)
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
   ! TIMES           [ reduce using rule 4 (expression -> expression PLUS expression .) ]
   ! DIVIDE          [ reduce using rule 4 (expression -> expression PLUS expression .) ]
-  ! PLUS            [ shift and go to state 32 ]
-  ! MINUS           [ shift and go to state 33 ]
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
 
 
-state 49
+state 53
 
     (5) expression -> expression MINUS expression .
     (4) expression -> expression . PLUS expression
@@ -941,16 +1024,16 @@ state 49
     LESS            reduce using rule 5 (expression -> expression MINUS expression .)
     GREATEREQUAL    reduce using rule 5 (expression -> expression MINUS expression .)
     LESSEQUAL       reduce using rule 5 (expression -> expression MINUS expression .)
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
   ! TIMES           [ reduce using rule 5 (expression -> expression MINUS expression .) ]
   ! DIVIDE          [ reduce using rule 5 (expression -> expression MINUS expression .) ]
-  ! PLUS            [ shift and go to state 32 ]
-  ! MINUS           [ shift and go to state 33 ]
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
 
 
-state 50
+state 54
 
     (6) expression -> expression TIMES expression .
     (4) expression -> expression . PLUS expression
@@ -975,13 +1058,13 @@ state 50
     GREATEREQUAL    reduce using rule 6 (expression -> expression TIMES expression .)
     LESSEQUAL       reduce using rule 6 (expression -> expression TIMES expression .)
 
-  ! PLUS            [ shift and go to state 32 ]
-  ! MINUS           [ shift and go to state 33 ]
-  ! TIMES           [ shift and go to state 34 ]
-  ! DIVIDE          [ shift and go to state 35 ]
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
+  ! TIMES           [ shift and go to state 36 ]
+  ! DIVIDE          [ shift and go to state 37 ]
 
 
-state 51
+state 55
 
     (7) expression -> expression DIVIDE expression .
     (4) expression -> expression . PLUS expression
@@ -1006,46 +1089,46 @@ state 51
     GREATEREQUAL    reduce using rule 7 (expression -> expression DIVIDE expression .)
     LESSEQUAL       reduce using rule 7 (expression -> expression DIVIDE expression .)
 
-  ! PLUS            [ shift and go to state 32 ]
-  ! MINUS           [ shift and go to state 33 ]
-  ! TIMES           [ shift and go to state 34 ]
-  ! DIVIDE          [ shift and go to state 35 ]
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
+  ! TIMES           [ shift and go to state 36 ]
+  ! DIVIDE          [ shift and go to state 37 ]
 
 
-state 52
+state 56
 
-    (45) elseif -> elseif elseif .
-    (45) elseif -> elseif . elseif
-    (46) elseif -> elseif . else
-    (44) elseif -> . ELSEIF LPAREN condition RPAREN scope
-    (45) elseif -> . elseif elseif
-    (46) elseif -> . elseif else
-    (47) else -> . ELSE scope
+    (46) elseif -> elseif elseif .
+    (46) elseif -> elseif . elseif
+    (47) elseif -> elseif . else
+    (45) elseif -> . ELSEIF LPAREN condition RPAREN scope
+    (46) elseif -> . elseif elseif
+    (47) elseif -> . elseif else
+    (48) else -> . ELSE scope
 
   ! shift/reduce conflict for ELSEIF resolved as shift
   ! shift/reduce conflict for ELSE resolved as shift
-    RBRAKETS        reduce using rule 45 (elseif -> elseif elseif .)
-    ELSEIF          shift and go to state 38
-    ELSE            shift and go to state 19
+    RBRAKETS        reduce using rule 46 (elseif -> elseif elseif .)
+    ELSEIF          shift and go to state 40
+    ELSE            shift and go to state 20
 
-  ! ELSEIF          [ reduce using rule 45 (elseif -> elseif elseif .) ]
-  ! ELSE            [ reduce using rule 45 (elseif -> elseif elseif .) ]
+  ! ELSEIF          [ reduce using rule 46 (elseif -> elseif elseif .) ]
+  ! ELSE            [ reduce using rule 46 (elseif -> elseif elseif .) ]
 
-    elseif                         shift and go to state 52
-    else                           shift and go to state 53
+    elseif                         shift and go to state 56
+    else                           shift and go to state 57
 
-state 53
+state 57
 
-    (46) elseif -> elseif else .
+    (47) elseif -> elseif else .
 
-    ELSEIF          reduce using rule 46 (elseif -> elseif else .)
-    ELSE            reduce using rule 46 (elseif -> elseif else .)
-    RBRAKETS        reduce using rule 46 (elseif -> elseif else .)
+    ELSEIF          reduce using rule 47 (elseif -> elseif else .)
+    ELSE            reduce using rule 47 (elseif -> elseif else .)
+    RBRAKETS        reduce using rule 47 (elseif -> elseif else .)
 
 
-state 54
+state 58
 
-    (44) elseif -> ELSEIF LPAREN . condition RPAREN scope
+    (45) elseif -> ELSEIF LPAREN . condition RPAREN scope
     (20) condition -> . expression OR expression
     (21) condition -> . expression NOT expression
     (22) condition -> . expression AND expression
@@ -1067,30 +1150,30 @@ state 54
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 60
-    NOT             shift and go to state 63
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 64
+    NOT             shift and go to state 67
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    condition                      shift and go to state 68
-    expression                     shift and go to state 62
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    condition                      shift and go to state 76
+    expression                     shift and go to state 66
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 55
+state 59
 
     (8) expression -> LPAREN expression RPAREN .
-    (54) factor -> LPAREN expression RPAREN .
+    (53) factor -> LPAREN expression RPAREN .
 
   ! reduce/reduce conflict for RBRAKETS resolved using rule 8 (expression -> LPAREN expression RPAREN .)
   ! reduce/reduce conflict for SEMICOLON resolved using rule 8 (expression -> LPAREN expression RPAREN .)
@@ -1124,33 +1207,33 @@ state 55
     LESS            reduce using rule 8 (expression -> LPAREN expression RPAREN .)
     GREATEREQUAL    reduce using rule 8 (expression -> LPAREN expression RPAREN .)
     LESSEQUAL       reduce using rule 8 (expression -> LPAREN expression RPAREN .)
-    ADRESS          reduce using rule 54 (factor -> LPAREN expression RPAREN .)
+    ADRESS          reduce using rule 53 (factor -> LPAREN expression RPAREN .)
 
-  ! RBRAKETS        [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! SEMICOLON       [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! PLUS            [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! MINUS           [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! TIMES           [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! DIVIDE          [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! RPAREN          [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! OR              [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! NOT             [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! AND             [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! EQUAL           [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! NOTEQUAL        [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! GREATER         [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! LESS            [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! GREATEREQUAL    [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
-  ! LESSEQUAL       [ reduce using rule 54 (factor -> LPAREN expression RPAREN .) ]
+  ! RBRAKETS        [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! SEMICOLON       [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! PLUS            [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! MINUS           [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! TIMES           [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! DIVIDE          [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! RPAREN          [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! OR              [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! NOT             [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! AND             [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! EQUAL           [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! NOTEQUAL        [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! GREATER         [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! LESS            [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! GREATEREQUAL    [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
+  ! LESSEQUAL       [ reduce using rule 53 (factor -> LPAREN expression RPAREN .) ]
 
 
-state 56
+state 60
 
     (17) adress -> term ADRESS term . SEMICOLON
     (9) expression -> term .
 
   ! shift/reduce conflict for SEMICOLON resolved as shift
-    SEMICOLON       shift and go to state 69
+    SEMICOLON       shift and go to state 77
     PLUS            reduce using rule 9 (expression -> term .)
     MINUS           reduce using rule 9 (expression -> term .)
     TIMES           reduce using rule 9 (expression -> term .)
@@ -1159,7 +1242,7 @@ state 56
   ! SEMICOLON       [ reduce using rule 9 (expression -> term .) ]
 
 
-state 57
+state 61
 
     (16) adress -> term ADRESS expression . SEMICOLON
     (4) expression -> expression . PLUS expression
@@ -1167,40 +1250,40 @@ state 57
     (6) expression -> expression . TIMES expression
     (7) expression -> expression . DIVIDE expression
 
-    SEMICOLON       shift and go to state 70
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    SEMICOLON       shift and go to state 78
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 58
+state 62
 
     (18) adress -> term ADRESS NUMBER . SEMICOLON
-    (53) factor -> NUMBER .
+    (52) factor -> NUMBER .
 
   ! shift/reduce conflict for SEMICOLON resolved as shift
-    SEMICOLON       shift and go to state 71
-    PLUS            reduce using rule 53 (factor -> NUMBER .)
-    MINUS           reduce using rule 53 (factor -> NUMBER .)
-    TIMES           reduce using rule 53 (factor -> NUMBER .)
-    DIVIDE          reduce using rule 53 (factor -> NUMBER .)
+    SEMICOLON       shift and go to state 79
+    PLUS            reduce using rule 52 (factor -> NUMBER .)
+    MINUS           reduce using rule 52 (factor -> NUMBER .)
+    TIMES           reduce using rule 52 (factor -> NUMBER .)
+    DIVIDE          reduce using rule 52 (factor -> NUMBER .)
 
-  ! SEMICOLON       [ reduce using rule 53 (factor -> NUMBER .) ]
+  ! SEMICOLON       [ reduce using rule 52 (factor -> NUMBER .) ]
 
 
-state 59
+state 63
 
     (19) adress -> term ADRESS LITSTRING . SEMICOLON
 
-    SEMICOLON       shift and go to state 72
+    SEMICOLON       shift and go to state 80
 
 
-state 60
+state 64
 
     (32) condition -> LPAREN . condition RPAREN
     (8) expression -> LPAREN . expression RPAREN
-    (54) factor -> LPAREN . expression RPAREN
+    (53) factor -> LPAREN . expression RPAREN
     (20) condition -> . expression OR expression
     (21) condition -> . expression NOT expression
     (22) condition -> . expression AND expression
@@ -1222,40 +1305,40 @@ state 60
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 60
-    NOT             shift and go to state 63
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 64
+    NOT             shift and go to state 67
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    condition                      shift and go to state 73
-    expression                     shift and go to state 74
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    condition                      shift and go to state 81
+    expression                     shift and go to state 82
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 61
+state 65
 
-    (41) if -> IF LPAREN condition . RPAREN scope
+    (42) if -> IF LPAREN condition . RPAREN scope
     (24) condition -> condition . OR condition
     (25) condition -> condition . NOT condition
     (26) condition -> condition . AND condition
 
-    RPAREN          shift and go to state 75
-    OR              shift and go to state 76
-    NOT             shift and go to state 77
-    AND             shift and go to state 78
+    RPAREN          shift and go to state 83
+    OR              shift and go to state 84
+    NOT             shift and go to state 85
+    AND             shift and go to state 86
 
 
-state 62
+state 66
 
     (20) condition -> expression . OR expression
     (21) condition -> expression . NOT expression
@@ -1271,22 +1354,22 @@ state 62
     (6) expression -> expression . TIMES expression
     (7) expression -> expression . DIVIDE expression
 
-    OR              shift and go to state 79
-    NOT             shift and go to state 80
-    AND             shift and go to state 81
-    EQUAL           shift and go to state 82
-    NOTEQUAL        shift and go to state 83
-    GREATER         shift and go to state 84
-    LESS            shift and go to state 85
-    GREATEREQUAL    shift and go to state 86
-    LESSEQUAL       shift and go to state 87
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    OR              shift and go to state 87
+    NOT             shift and go to state 88
+    AND             shift and go to state 89
+    EQUAL           shift and go to state 90
+    NOTEQUAL        shift and go to state 91
+    GREATER         shift and go to state 92
+    LESS            shift and go to state 93
+    GREATEREQUAL    shift and go to state 94
+    LESSEQUAL       shift and go to state 95
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 63
+state 67
 
     (33) condition -> NOT . condition
     (20) condition -> . expression OR expression
@@ -1310,136 +1393,182 @@ state 63
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 60
-    NOT             shift and go to state 63
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 64
+    NOT             shift and go to state 67
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    condition                      shift and go to state 88
-    expression                     shift and go to state 62
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
-
-state 64
-
-    (48) for -> FOR LPAREN expression . SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS
-    (4) expression -> expression . PLUS expression
-    (5) expression -> expression . MINUS expression
-    (6) expression -> expression . TIMES expression
-    (7) expression -> expression . DIVIDE expression
-
-    SEMICOLON       shift and go to state 89
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
-
-
-state 65
-
-    (49) while -> WHILE LPAREN expression . RPAREN LBRAKETS expression RBRAKETS
-    (4) expression -> expression . PLUS expression
-    (5) expression -> expression . MINUS expression
-    (6) expression -> expression . TIMES expression
-    (7) expression -> expression . DIVIDE expression
-
-    RPAREN          shift and go to state 90
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
-
-
-state 66
-
-    (50) print -> PRINT LPAREN LITSTRING . RPAREN SEMICOLON
-
-    RPAREN          shift and go to state 91
-
-
-state 67
-
-    (51) print -> PRINT LPAREN expression . RPAREN SEMICOLON
-    (4) expression -> expression . PLUS expression
-    (5) expression -> expression . MINUS expression
-    (6) expression -> expression . TIMES expression
-    (7) expression -> expression . DIVIDE expression
-
-    RPAREN          shift and go to state 92
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
-
+    condition                      shift and go to state 96
+    expression                     shift and go to state 66
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
 state 68
 
-    (44) elseif -> ELSEIF LPAREN condition . RPAREN scope
-    (24) condition -> condition . OR condition
-    (25) condition -> condition . NOT condition
-    (26) condition -> condition . AND condition
+    (53) factor -> LPAREN . expression RPAREN
+    (4) expression -> . expression PLUS expression
+    (5) expression -> . expression MINUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression DIVIDE expression
+    (8) expression -> . LPAREN expression RPAREN
+    (9) expression -> . term
+    (10) term -> . type ID
+    (51) term -> . factor
+    (11) type -> . INT
+    (12) type -> . FLOAT
+    (13) type -> . STRING
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    RPAREN          shift and go to state 93
-    OR              shift and go to state 76
-    NOT             shift and go to state 77
-    AND             shift and go to state 78
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
+    expression                     shift and go to state 97
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
 state 69
 
-    (17) adress -> term ADRESS term SEMICOLON .
+    (54) for -> FOR LPAREN for_initilizer . SEMICOLON condition SEMICOLON expression RPAREN scope
 
-    RBRAKETS        reduce using rule 17 (adress -> term ADRESS term SEMICOLON .)
+    SEMICOLON       shift and go to state 98
 
 
 state 70
 
-    (16) adress -> term ADRESS expression SEMICOLON .
+    (55) for_initilizer -> adress .
 
-    RBRAKETS        reduce using rule 16 (adress -> term ADRESS expression SEMICOLON .)
+    SEMICOLON       reduce using rule 55 (for_initilizer -> adress .)
 
 
 state 71
 
-    (18) adress -> term ADRESS NUMBER SEMICOLON .
+    (16) adress -> term . ADRESS expression SEMICOLON
+    (17) adress -> term . ADRESS term SEMICOLON
+    (18) adress -> term . ADRESS NUMBER SEMICOLON
+    (19) adress -> term . ADRESS LITSTRING SEMICOLON
 
-    RBRAKETS        reduce using rule 18 (adress -> term ADRESS NUMBER SEMICOLON .)
+    ADRESS          shift and go to state 43
 
 
 state 72
 
-    (19) adress -> term ADRESS LITSTRING SEMICOLON .
+    (56) while -> WHILE LPAREN condition . RPAREN scope
+    (24) condition -> condition . OR condition
+    (25) condition -> condition . NOT condition
+    (26) condition -> condition . AND condition
 
-    RBRAKETS        reduce using rule 19 (adress -> term ADRESS LITSTRING SEMICOLON .)
+    RPAREN          shift and go to state 99
+    OR              shift and go to state 84
+    NOT             shift and go to state 85
+    AND             shift and go to state 86
 
 
 state 73
+
+    (49) print -> PRINT LPAREN LITSTRING . RPAREN SEMICOLON
+
+    RPAREN          shift and go to state 100
+
+
+state 74
+
+    (50) print -> PRINT LPAREN expression . RPAREN SEMICOLON
+    (4) expression -> expression . PLUS expression
+    (5) expression -> expression . MINUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . DIVIDE expression
+
+    RPAREN          shift and go to state 101
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+
+
+state 75
+
+    (14) return -> RETURN expression SEMICOLON .
+
+    RBRAKETS        reduce using rule 14 (return -> RETURN expression SEMICOLON .)
+
+
+state 76
+
+    (45) elseif -> ELSEIF LPAREN condition . RPAREN scope
+    (24) condition -> condition . OR condition
+    (25) condition -> condition . NOT condition
+    (26) condition -> condition . AND condition
+
+    RPAREN          shift and go to state 102
+    OR              shift and go to state 84
+    NOT             shift and go to state 85
+    AND             shift and go to state 86
+
+
+state 77
+
+    (17) adress -> term ADRESS term SEMICOLON .
+
+    RBRAKETS        reduce using rule 17 (adress -> term ADRESS term SEMICOLON .)
+    SEMICOLON       reduce using rule 17 (adress -> term ADRESS term SEMICOLON .)
+
+
+state 78
+
+    (16) adress -> term ADRESS expression SEMICOLON .
+
+    RBRAKETS        reduce using rule 16 (adress -> term ADRESS expression SEMICOLON .)
+    SEMICOLON       reduce using rule 16 (adress -> term ADRESS expression SEMICOLON .)
+
+
+state 79
+
+    (18) adress -> term ADRESS NUMBER SEMICOLON .
+
+    RBRAKETS        reduce using rule 18 (adress -> term ADRESS NUMBER SEMICOLON .)
+    SEMICOLON       reduce using rule 18 (adress -> term ADRESS NUMBER SEMICOLON .)
+
+
+state 80
+
+    (19) adress -> term ADRESS LITSTRING SEMICOLON .
+
+    RBRAKETS        reduce using rule 19 (adress -> term ADRESS LITSTRING SEMICOLON .)
+    SEMICOLON       reduce using rule 19 (adress -> term ADRESS LITSTRING SEMICOLON .)
+
+
+state 81
 
     (32) condition -> LPAREN condition . RPAREN
     (24) condition -> condition . OR condition
     (25) condition -> condition . NOT condition
     (26) condition -> condition . AND condition
 
-    RPAREN          shift and go to state 94
-    OR              shift and go to state 76
-    NOT             shift and go to state 77
-    AND             shift and go to state 78
+    RPAREN          shift and go to state 103
+    OR              shift and go to state 84
+    NOT             shift and go to state 85
+    AND             shift and go to state 86
 
 
-state 74
+state 82
 
     (8) expression -> LPAREN expression . RPAREN
-    (54) factor -> LPAREN expression . RPAREN
+    (53) factor -> LPAREN expression . RPAREN
     (20) condition -> expression . OR expression
     (21) condition -> expression . NOT expression
     (22) condition -> expression . AND expression
@@ -1454,33 +1583,33 @@ state 74
     (6) expression -> expression . TIMES expression
     (7) expression -> expression . DIVIDE expression
 
-    RPAREN          shift and go to state 55
-    OR              shift and go to state 79
-    NOT             shift and go to state 80
-    AND             shift and go to state 81
-    EQUAL           shift and go to state 82
-    NOTEQUAL        shift and go to state 83
-    GREATER         shift and go to state 84
-    LESS            shift and go to state 85
-    GREATEREQUAL    shift and go to state 86
-    LESSEQUAL       shift and go to state 87
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    RPAREN          shift and go to state 59
+    OR              shift and go to state 87
+    NOT             shift and go to state 88
+    AND             shift and go to state 89
+    EQUAL           shift and go to state 90
+    NOTEQUAL        shift and go to state 91
+    GREATER         shift and go to state 92
+    LESS            shift and go to state 93
+    GREATEREQUAL    shift and go to state 94
+    LESSEQUAL       shift and go to state 95
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 75
+state 83
 
-    (41) if -> IF LPAREN condition RPAREN . scope
+    (42) if -> IF LPAREN condition RPAREN . scope
     (2) scope -> . LBRAKETS statement RBRAKETS
     (3) scope -> . LBRAKETS expression RBRAKETS
 
     LBRAKETS        shift and go to state 7
 
-    scope                          shift and go to state 95
+    scope                          shift and go to state 104
 
-state 76
+state 84
 
     (24) condition -> condition OR . condition
     (20) condition -> . expression OR expression
@@ -1504,27 +1633,27 @@ state 76
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 60
-    NOT             shift and go to state 63
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 64
+    NOT             shift and go to state 67
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    condition                      shift and go to state 96
-    expression                     shift and go to state 62
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    condition                      shift and go to state 105
+    expression                     shift and go to state 66
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 77
+state 85
 
     (25) condition -> condition NOT . condition
     (20) condition -> . expression OR expression
@@ -1548,27 +1677,27 @@ state 77
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 60
-    NOT             shift and go to state 63
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 64
+    NOT             shift and go to state 67
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    condition                      shift and go to state 97
-    expression                     shift and go to state 62
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    condition                      shift and go to state 106
+    expression                     shift and go to state 66
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 78
+state 86
 
     (26) condition -> condition AND . condition
     (20) condition -> . expression OR expression
@@ -1592,27 +1721,27 @@ state 78
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 60
-    NOT             shift and go to state 63
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 64
+    NOT             shift and go to state 67
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    condition                      shift and go to state 98
-    expression                     shift and go to state 62
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    condition                      shift and go to state 107
+    expression                     shift and go to state 66
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 79
+state 87
 
     (20) condition -> expression OR . expression
     (4) expression -> . expression PLUS expression
@@ -1622,25 +1751,25 @@ state 79
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 99
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 108
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 80
+state 88
 
     (21) condition -> expression NOT . expression
     (4) expression -> . expression PLUS expression
@@ -1650,25 +1779,25 @@ state 80
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 100
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 109
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 81
+state 89
 
     (22) condition -> expression AND . expression
     (4) expression -> . expression PLUS expression
@@ -1678,25 +1807,25 @@ state 81
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 101
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 110
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 82
+state 90
 
     (23) condition -> expression EQUAL . expression
     (4) expression -> . expression PLUS expression
@@ -1706,25 +1835,25 @@ state 82
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 102
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 111
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 83
+state 91
 
     (27) condition -> expression NOTEQUAL . expression
     (4) expression -> . expression PLUS expression
@@ -1734,25 +1863,25 @@ state 83
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 103
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 112
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 84
+state 92
 
     (28) condition -> expression GREATER . expression
     (4) expression -> . expression PLUS expression
@@ -1762,25 +1891,25 @@ state 84
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 104
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 113
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 85
+state 93
 
     (29) condition -> expression LESS . expression
     (4) expression -> . expression PLUS expression
@@ -1790,25 +1919,25 @@ state 85
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 105
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 114
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 86
+state 94
 
     (30) condition -> expression GREATEREQUAL . expression
     (4) expression -> . expression PLUS expression
@@ -1818,25 +1947,25 @@ state 86
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 106
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 115
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 87
+state 95
 
     (31) condition -> expression LESSEQUAL . expression
     (4) expression -> . expression PLUS expression
@@ -1846,25 +1975,25 @@ state 87
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 107
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 116
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 88
+state 96
 
     (33) condition -> NOT condition .
     (24) condition -> condition . OR condition
@@ -1875,15 +2004,45 @@ state 88
     OR              reduce using rule 33 (condition -> NOT condition .)
     NOT             reduce using rule 33 (condition -> NOT condition .)
     AND             reduce using rule 33 (condition -> NOT condition .)
+    SEMICOLON       reduce using rule 33 (condition -> NOT condition .)
 
-  ! OR              [ shift and go to state 76 ]
-  ! NOT             [ shift and go to state 77 ]
-  ! AND             [ shift and go to state 78 ]
+  ! OR              [ shift and go to state 84 ]
+  ! NOT             [ shift and go to state 85 ]
+  ! AND             [ shift and go to state 86 ]
 
 
-state 89
+state 97
 
-    (48) for -> FOR LPAREN expression SEMICOLON . expression SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS
+    (53) factor -> LPAREN expression . RPAREN
+    (4) expression -> expression . PLUS expression
+    (5) expression -> expression . MINUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . DIVIDE expression
+
+    RPAREN          shift and go to state 117
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+
+
+state 98
+
+    (54) for -> FOR LPAREN for_initilizer SEMICOLON . condition SEMICOLON expression RPAREN scope
+    (20) condition -> . expression OR expression
+    (21) condition -> . expression NOT expression
+    (22) condition -> . expression AND expression
+    (23) condition -> . expression EQUAL expression
+    (24) condition -> . condition OR condition
+    (25) condition -> . condition NOT condition
+    (26) condition -> . condition AND condition
+    (27) condition -> . expression NOTEQUAL expression
+    (28) condition -> . expression GREATER expression
+    (29) condition -> . expression LESS expression
+    (30) condition -> . expression GREATEREQUAL expression
+    (31) condition -> . expression LESSEQUAL expression
+    (32) condition -> . LPAREN condition RPAREN
+    (33) condition -> . NOT condition
     (4) expression -> . expression PLUS expression
     (5) expression -> . expression MINUS expression
     (6) expression -> . expression TIMES expression
@@ -1891,56 +2050,61 @@ state 89
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 64
+    NOT             shift and go to state 67
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 108
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    condition                      shift and go to state 118
+    expression                     shift and go to state 66
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 90
+state 99
 
-    (49) while -> WHILE LPAREN expression RPAREN . LBRAKETS expression RBRAKETS
-
-    LBRAKETS        shift and go to state 109
-
-
-state 91
-
-    (50) print -> PRINT LPAREN LITSTRING RPAREN . SEMICOLON
-
-    SEMICOLON       shift and go to state 110
-
-
-state 92
-
-    (51) print -> PRINT LPAREN expression RPAREN . SEMICOLON
-
-    SEMICOLON       shift and go to state 111
-
-
-state 93
-
-    (44) elseif -> ELSEIF LPAREN condition RPAREN . scope
+    (56) while -> WHILE LPAREN condition RPAREN . scope
     (2) scope -> . LBRAKETS statement RBRAKETS
     (3) scope -> . LBRAKETS expression RBRAKETS
 
     LBRAKETS        shift and go to state 7
 
-    scope                          shift and go to state 112
+    scope                          shift and go to state 119
 
-state 94
+state 100
+
+    (49) print -> PRINT LPAREN LITSTRING RPAREN . SEMICOLON
+
+    SEMICOLON       shift and go to state 120
+
+
+state 101
+
+    (50) print -> PRINT LPAREN expression RPAREN . SEMICOLON
+
+    SEMICOLON       shift and go to state 121
+
+
+state 102
+
+    (45) elseif -> ELSEIF LPAREN condition RPAREN . scope
+    (2) scope -> . LBRAKETS statement RBRAKETS
+    (3) scope -> . LBRAKETS expression RBRAKETS
+
+    LBRAKETS        shift and go to state 7
+
+    scope                          shift and go to state 122
+
+state 103
 
     (32) condition -> LPAREN condition RPAREN .
 
@@ -1948,18 +2112,19 @@ state 94
     OR              reduce using rule 32 (condition -> LPAREN condition RPAREN .)
     NOT             reduce using rule 32 (condition -> LPAREN condition RPAREN .)
     AND             reduce using rule 32 (condition -> LPAREN condition RPAREN .)
+    SEMICOLON       reduce using rule 32 (condition -> LPAREN condition RPAREN .)
 
 
-state 95
+state 104
 
-    (41) if -> IF LPAREN condition RPAREN scope .
+    (42) if -> IF LPAREN condition RPAREN scope .
 
-    ELSEIF          reduce using rule 41 (if -> IF LPAREN condition RPAREN scope .)
-    ELSE            reduce using rule 41 (if -> IF LPAREN condition RPAREN scope .)
-    RBRAKETS        reduce using rule 41 (if -> IF LPAREN condition RPAREN scope .)
+    ELSEIF          reduce using rule 42 (if -> IF LPAREN condition RPAREN scope .)
+    ELSE            reduce using rule 42 (if -> IF LPAREN condition RPAREN scope .)
+    RBRAKETS        reduce using rule 42 (if -> IF LPAREN condition RPAREN scope .)
 
 
-state 96
+state 105
 
     (24) condition -> condition OR condition .
     (24) condition -> condition . OR condition
@@ -1968,15 +2133,16 @@ state 96
 
     RPAREN          reduce using rule 24 (condition -> condition OR condition .)
     OR              reduce using rule 24 (condition -> condition OR condition .)
-    NOT             shift and go to state 77
-    AND             shift and go to state 78
+    SEMICOLON       reduce using rule 24 (condition -> condition OR condition .)
+    NOT             shift and go to state 85
+    AND             shift and go to state 86
 
   ! NOT             [ reduce using rule 24 (condition -> condition OR condition .) ]
   ! AND             [ reduce using rule 24 (condition -> condition OR condition .) ]
-  ! OR              [ shift and go to state 76 ]
+  ! OR              [ shift and go to state 84 ]
 
 
-state 97
+state 106
 
     (25) condition -> condition NOT condition .
     (24) condition -> condition . OR condition
@@ -1987,13 +2153,14 @@ state 97
     OR              reduce using rule 25 (condition -> condition NOT condition .)
     NOT             reduce using rule 25 (condition -> condition NOT condition .)
     AND             reduce using rule 25 (condition -> condition NOT condition .)
+    SEMICOLON       reduce using rule 25 (condition -> condition NOT condition .)
 
-  ! OR              [ shift and go to state 76 ]
-  ! NOT             [ shift and go to state 77 ]
-  ! AND             [ shift and go to state 78 ]
+  ! OR              [ shift and go to state 84 ]
+  ! NOT             [ shift and go to state 85 ]
+  ! AND             [ shift and go to state 86 ]
 
 
-state 98
+state 107
 
     (26) condition -> condition AND condition .
     (24) condition -> condition . OR condition
@@ -2003,14 +2170,15 @@ state 98
     RPAREN          reduce using rule 26 (condition -> condition AND condition .)
     OR              reduce using rule 26 (condition -> condition AND condition .)
     AND             reduce using rule 26 (condition -> condition AND condition .)
-    NOT             shift and go to state 77
+    SEMICOLON       reduce using rule 26 (condition -> condition AND condition .)
+    NOT             shift and go to state 85
 
   ! NOT             [ reduce using rule 26 (condition -> condition AND condition .) ]
-  ! OR              [ shift and go to state 76 ]
-  ! AND             [ shift and go to state 78 ]
+  ! OR              [ shift and go to state 84 ]
+  ! AND             [ shift and go to state 86 ]
 
 
-state 99
+state 108
 
     (20) condition -> expression OR expression .
     (4) expression -> expression . PLUS expression
@@ -2022,13 +2190,14 @@ state 99
     OR              reduce using rule 20 (condition -> expression OR expression .)
     NOT             reduce using rule 20 (condition -> expression OR expression .)
     AND             reduce using rule 20 (condition -> expression OR expression .)
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    SEMICOLON       reduce using rule 20 (condition -> expression OR expression .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 100
+state 109
 
     (21) condition -> expression NOT expression .
     (4) expression -> expression . PLUS expression
@@ -2040,13 +2209,14 @@ state 100
     OR              reduce using rule 21 (condition -> expression NOT expression .)
     NOT             reduce using rule 21 (condition -> expression NOT expression .)
     AND             reduce using rule 21 (condition -> expression NOT expression .)
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    SEMICOLON       reduce using rule 21 (condition -> expression NOT expression .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 101
+state 110
 
     (22) condition -> expression AND expression .
     (4) expression -> expression . PLUS expression
@@ -2058,13 +2228,14 @@ state 101
     OR              reduce using rule 22 (condition -> expression AND expression .)
     NOT             reduce using rule 22 (condition -> expression AND expression .)
     AND             reduce using rule 22 (condition -> expression AND expression .)
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    SEMICOLON       reduce using rule 22 (condition -> expression AND expression .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 102
+state 111
 
     (23) condition -> expression EQUAL expression .
     (4) expression -> expression . PLUS expression
@@ -2076,13 +2247,14 @@ state 102
     OR              reduce using rule 23 (condition -> expression EQUAL expression .)
     NOT             reduce using rule 23 (condition -> expression EQUAL expression .)
     AND             reduce using rule 23 (condition -> expression EQUAL expression .)
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    SEMICOLON       reduce using rule 23 (condition -> expression EQUAL expression .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 103
+state 112
 
     (27) condition -> expression NOTEQUAL expression .
     (4) expression -> expression . PLUS expression
@@ -2094,13 +2266,14 @@ state 103
     OR              reduce using rule 27 (condition -> expression NOTEQUAL expression .)
     NOT             reduce using rule 27 (condition -> expression NOTEQUAL expression .)
     AND             reduce using rule 27 (condition -> expression NOTEQUAL expression .)
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    SEMICOLON       reduce using rule 27 (condition -> expression NOTEQUAL expression .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 104
+state 113
 
     (28) condition -> expression GREATER expression .
     (4) expression -> expression . PLUS expression
@@ -2112,13 +2285,14 @@ state 104
     OR              reduce using rule 28 (condition -> expression GREATER expression .)
     NOT             reduce using rule 28 (condition -> expression GREATER expression .)
     AND             reduce using rule 28 (condition -> expression GREATER expression .)
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    SEMICOLON       reduce using rule 28 (condition -> expression GREATER expression .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 105
+state 114
 
     (29) condition -> expression LESS expression .
     (4) expression -> expression . PLUS expression
@@ -2130,13 +2304,14 @@ state 105
     OR              reduce using rule 29 (condition -> expression LESS expression .)
     NOT             reduce using rule 29 (condition -> expression LESS expression .)
     AND             reduce using rule 29 (condition -> expression LESS expression .)
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    SEMICOLON       reduce using rule 29 (condition -> expression LESS expression .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 106
+state 115
 
     (30) condition -> expression GREATEREQUAL expression .
     (4) expression -> expression . PLUS expression
@@ -2148,13 +2323,14 @@ state 106
     OR              reduce using rule 30 (condition -> expression GREATEREQUAL expression .)
     NOT             reduce using rule 30 (condition -> expression GREATEREQUAL expression .)
     AND             reduce using rule 30 (condition -> expression GREATEREQUAL expression .)
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    SEMICOLON       reduce using rule 30 (condition -> expression GREATEREQUAL expression .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 107
+state 116
 
     (31) condition -> expression LESSEQUAL expression .
     (4) expression -> expression . PLUS expression
@@ -2166,153 +2342,66 @@ state 107
     OR              reduce using rule 31 (condition -> expression LESSEQUAL expression .)
     NOT             reduce using rule 31 (condition -> expression LESSEQUAL expression .)
     AND             reduce using rule 31 (condition -> expression LESSEQUAL expression .)
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
-
-
-state 108
-
-    (48) for -> FOR LPAREN expression SEMICOLON expression . SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS
-    (4) expression -> expression . PLUS expression
-    (5) expression -> expression . MINUS expression
-    (6) expression -> expression . TIMES expression
-    (7) expression -> expression . DIVIDE expression
-
-    SEMICOLON       shift and go to state 113
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
-
-
-state 109
-
-    (49) while -> WHILE LPAREN expression RPAREN LBRAKETS . expression RBRAKETS
-    (4) expression -> . expression PLUS expression
-    (5) expression -> . expression MINUS expression
-    (6) expression -> . expression TIMES expression
-    (7) expression -> . expression DIVIDE expression
-    (8) expression -> . LPAREN expression RPAREN
-    (9) expression -> . term
-    (10) term -> . type ID
-    (52) term -> . factor
-    (11) type -> . INT
-    (12) type -> . FLOAT
-    (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
-
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
-
-    expression                     shift and go to state 114
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
-
-state 110
-
-    (50) print -> PRINT LPAREN LITSTRING RPAREN SEMICOLON .
-
-    RBRAKETS        reduce using rule 50 (print -> PRINT LPAREN LITSTRING RPAREN SEMICOLON .)
-
-
-state 111
-
-    (51) print -> PRINT LPAREN expression RPAREN SEMICOLON .
-
-    RBRAKETS        reduce using rule 51 (print -> PRINT LPAREN expression RPAREN SEMICOLON .)
-
-
-state 112
-
-    (44) elseif -> ELSEIF LPAREN condition RPAREN scope .
-
-    ELSEIF          reduce using rule 44 (elseif -> ELSEIF LPAREN condition RPAREN scope .)
-    ELSE            reduce using rule 44 (elseif -> ELSEIF LPAREN condition RPAREN scope .)
-    RBRAKETS        reduce using rule 44 (elseif -> ELSEIF LPAREN condition RPAREN scope .)
-
-
-state 113
-
-    (48) for -> FOR LPAREN expression SEMICOLON expression SEMICOLON . expression RPAREN LBRAKETS expression RBRAKETS
-    (4) expression -> . expression PLUS expression
-    (5) expression -> . expression MINUS expression
-    (6) expression -> . expression TIMES expression
-    (7) expression -> . expression DIVIDE expression
-    (8) expression -> . LPAREN expression RPAREN
-    (9) expression -> . term
-    (10) term -> . type ID
-    (52) term -> . factor
-    (11) type -> . INT
-    (12) type -> . FLOAT
-    (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
-
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
-
-    expression                     shift and go to state 115
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
-
-state 114
-
-    (49) while -> WHILE LPAREN expression RPAREN LBRAKETS expression . RBRAKETS
-    (4) expression -> expression . PLUS expression
-    (5) expression -> expression . MINUS expression
-    (6) expression -> expression . TIMES expression
-    (7) expression -> expression . DIVIDE expression
-
-    RBRAKETS        shift and go to state 116
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
-
-
-state 115
-
-    (48) for -> FOR LPAREN expression SEMICOLON expression SEMICOLON expression . RPAREN LBRAKETS expression RBRAKETS
-    (4) expression -> expression . PLUS expression
-    (5) expression -> expression . MINUS expression
-    (6) expression -> expression . TIMES expression
-    (7) expression -> expression . DIVIDE expression
-
-    RPAREN          shift and go to state 117
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
-
-
-state 116
-
-    (49) while -> WHILE LPAREN expression RPAREN LBRAKETS expression RBRAKETS .
-
-    RBRAKETS        reduce using rule 49 (while -> WHILE LPAREN expression RPAREN LBRAKETS expression RBRAKETS .)
+    SEMICOLON       reduce using rule 31 (condition -> expression LESSEQUAL expression .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
 state 117
 
-    (48) for -> FOR LPAREN expression SEMICOLON expression SEMICOLON expression RPAREN . LBRAKETS expression RBRAKETS
+    (53) factor -> LPAREN expression RPAREN .
 
-    LBRAKETS        shift and go to state 118
+    ADRESS          reduce using rule 53 (factor -> LPAREN expression RPAREN .)
 
 
 state 118
 
-    (48) for -> FOR LPAREN expression SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS . expression RBRAKETS
+    (54) for -> FOR LPAREN for_initilizer SEMICOLON condition . SEMICOLON expression RPAREN scope
+    (24) condition -> condition . OR condition
+    (25) condition -> condition . NOT condition
+    (26) condition -> condition . AND condition
+
+    SEMICOLON       shift and go to state 123
+    OR              shift and go to state 84
+    NOT             shift and go to state 85
+    AND             shift and go to state 86
+
+
+state 119
+
+    (56) while -> WHILE LPAREN condition RPAREN scope .
+
+    RBRAKETS        reduce using rule 56 (while -> WHILE LPAREN condition RPAREN scope .)
+
+
+state 120
+
+    (49) print -> PRINT LPAREN LITSTRING RPAREN SEMICOLON .
+
+    RBRAKETS        reduce using rule 49 (print -> PRINT LPAREN LITSTRING RPAREN SEMICOLON .)
+
+
+state 121
+
+    (50) print -> PRINT LPAREN expression RPAREN SEMICOLON .
+
+    RBRAKETS        reduce using rule 50 (print -> PRINT LPAREN expression RPAREN SEMICOLON .)
+
+
+state 122
+
+    (45) elseif -> ELSEIF LPAREN condition RPAREN scope .
+
+    ELSEIF          reduce using rule 45 (elseif -> ELSEIF LPAREN condition RPAREN scope .)
+    ELSE            reduce using rule 45 (elseif -> ELSEIF LPAREN condition RPAREN scope .)
+    RBRAKETS        reduce using rule 45 (elseif -> ELSEIF LPAREN condition RPAREN scope .)
+
+
+state 123
+
+    (54) for -> FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON . expression RPAREN scope
     (4) expression -> . expression PLUS expression
     (5) expression -> . expression MINUS expression
     (6) expression -> . expression TIMES expression
@@ -2320,53 +2409,63 @@ state 118
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . term
     (10) term -> . type ID
-    (52) term -> . factor
+    (51) term -> . factor
     (11) type -> . INT
     (12) type -> . FLOAT
     (13) type -> . STRING
-    (53) factor -> . NUMBER
-    (54) factor -> . LPAREN expression RPAREN
+    (52) factor -> . NUMBER
+    (53) factor -> . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 16
-    INT             shift and go to state 26
-    FLOAT           shift and go to state 27
-    STRING          shift and go to state 28
-    NUMBER          shift and go to state 23
+    LPAREN          shift and go to state 17
+    INT             shift and go to state 28
+    FLOAT           shift and go to state 29
+    STRING          shift and go to state 30
+    NUMBER          shift and go to state 24
 
-    expression                     shift and go to state 119
-    term                           shift and go to state 40
-    type                           shift and go to state 24
-    factor                         shift and go to state 25
+    expression                     shift and go to state 124
+    term                           shift and go to state 42
+    type                           shift and go to state 26
+    factor                         shift and go to state 27
 
-state 119
+state 124
 
-    (48) for -> FOR LPAREN expression SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS expression . RBRAKETS
+    (54) for -> FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression . RPAREN scope
     (4) expression -> expression . PLUS expression
     (5) expression -> expression . MINUS expression
     (6) expression -> expression . TIMES expression
     (7) expression -> expression . DIVIDE expression
 
-    RBRAKETS        shift and go to state 120
-    PLUS            shift and go to state 32
-    MINUS           shift and go to state 33
-    TIMES           shift and go to state 34
-    DIVIDE          shift and go to state 35
+    RPAREN          shift and go to state 125
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
 
 
-state 120
+state 125
 
-    (48) for -> FOR LPAREN expression SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS .
+    (54) for -> FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN . scope
+    (2) scope -> . LBRAKETS statement RBRAKETS
+    (3) scope -> . LBRAKETS expression RBRAKETS
 
-    RBRAKETS        reduce using rule 48 (for -> FOR LPAREN expression SEMICOLON expression SEMICOLON expression RPAREN LBRAKETS expression RBRAKETS .)
+    LBRAKETS        shift and go to state 7
+
+    scope                          shift and go to state 126
+
+state 126
+
+    (54) for -> FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope .
+
+    RBRAKETS        reduce using rule 54 (for -> FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for ELSEIF in state 36 resolved as shift
-WARNING: shift/reduce conflict for ELSE in state 36 resolved as shift
-WARNING: shift/reduce conflict for ELSEIF in state 52 resolved as shift
-WARNING: shift/reduce conflict for ELSE in state 52 resolved as shift
-WARNING: shift/reduce conflict for SEMICOLON in state 56 resolved as shift
-WARNING: shift/reduce conflict for SEMICOLON in state 58 resolved as shift
-WARNING: reduce/reduce conflict in state 55 resolved using rule (expression -> LPAREN expression RPAREN)
-WARNING: rejected rule (factor -> LPAREN expression RPAREN) in state 55
+WARNING: shift/reduce conflict for ELSEIF in state 38 resolved as shift
+WARNING: shift/reduce conflict for ELSE in state 38 resolved as shift
+WARNING: shift/reduce conflict for ELSEIF in state 56 resolved as shift
+WARNING: shift/reduce conflict for ELSE in state 56 resolved as shift
+WARNING: shift/reduce conflict for SEMICOLON in state 60 resolved as shift
+WARNING: shift/reduce conflict for SEMICOLON in state 62 resolved as shift
+WARNING: reduce/reduce conflict in state 59 resolved using rule (expression -> LPAREN expression RPAREN)
+WARNING: rejected rule (factor -> LPAREN expression RPAREN) in state 59
