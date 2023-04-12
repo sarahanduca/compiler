@@ -5,7 +5,7 @@ from lexer import LexicalAnalysis
 code_input = open("test_input.txt", "r")
 tokens = LexicalAnalysis()
 tokens = tokens.tokens
-variables = {}
+variables = []
 
 
 precedence = (
@@ -56,23 +56,32 @@ def p_expression(p):
 
 # TODO add ID and instance function
 def p_term(p):
-    """term : ID
+    """term : instance
     | factor
     """
-    if len(p) == 3:
-        p[0] = Node("type", [Node("ID", leaf=p[2])])
-    else:
+
+    if p[1].type == "NUMBER":
         p[0] = Node("factor", [p[1]])
+
+    else:
+        p[0] = Node("instance", [p[1]])
 
 
 def p_instance(p):
     """
-    instance : type term
+    instance : type ID
+     | ID
 
     """
-    variables = None
-    variables = p[2].leaf
-    variables[variables] = p[1].leaf
+    if len(p) == 3:
+        p[0] = Node("type", [Node("ID", leaf=p[2])])
+    else:
+        p[0] = Node("ID", leaf=p[1])
+
+
+def p_factor(p):
+    "factor : NUMBER"
+    p[0] = Node("NUMBER", leaf=p[1])
 
 
 def p_type(p):
@@ -86,15 +95,6 @@ def p_type(p):
     pass
 
 
-def p_return(p):
-    """
-    return : RETURN expression SEMICOLON
-            | RETURN SEMICOLON
-    """
-    p[0] = Node("return", [p[2]])
-    p[0] = Node("return", leaf=p[1])
-
-
 def p_adress(p):
     """
     adress : term ADRESS expression SEMICOLON
@@ -103,6 +103,15 @@ def p_adress(p):
     """
 
     p[0] = Node("adress", [p[1], p[3]])
+
+
+def p_return(p):
+    """
+    return : RETURN expression SEMICOLON
+            | RETURN SEMICOLON
+    """
+    p[0] = Node("return", [p[2]])
+    p[0] = Node("return", leaf=p[1])
 
 
 def p_condition(p):
@@ -193,11 +202,6 @@ def p_print(p):
         p[0] = Node("print", leaf=p[3])
     else:
         p[0] = Node("print", [p[5]], p[3])
-
-
-def p_factor(p):
-    "factor : NUMBER"
-    p[0] = Node("NUMBER", leaf=p[1])
 
 
 def p_for(p):

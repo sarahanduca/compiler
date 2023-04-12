@@ -16,5 +16,3 @@ class Node:
             print("  " * (level + 1) + str(self.leaf))
         for child in self.children:
             child.print_tree(level + 1)
-
-    # def verify_type(type, value):
