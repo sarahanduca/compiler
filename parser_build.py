@@ -1,4 +1,5 @@
 import ply.yacc as yacc
+from tree import Node
 from lexer import LexicalAnalysis
 
 tokens = LexicalAnalysis()
@@ -24,7 +25,7 @@ precedence = (
 
 def p_start(p):
     "main : INT MAIN LPAREN RPAREN scope"
-    p[0] = p[5]
+    p[0] = Node("main", [p[5]])
     pass
 
 
@@ -34,7 +35,7 @@ def p_scope(p):
         | LBRAKETS expression RBRAKETS
 
     """
-    p[0] = p[2]
+    p[0] = Node("scope", [p[2]])
 
 
 def p_op_expression(p):
@@ -48,7 +49,7 @@ def p_op_expression(p):
     if len(p) == 2:
         p[0] = p[1]
 
-    elif p[2] == "+":
+    if p[2] == "+":
         p[0] = p[1] + p[3]
 
     elif p[2] == "-":
@@ -61,17 +62,17 @@ def p_op_expression(p):
         p[0] = p[1] / p[3]
 
     else:
-        p[0] = p[2]
-
-
-# def p_expression_term(p):
-#     "expression : term"
-#     p[0] = p[1]
+        p[0] = Node("expression", [p[1], p[3]], p[2])
 
 
 def p_term(p):
-    "term : type ID"
-    p[0] = p[2]
+    """term : type ID
+    | factor
+    """
+    if len(p) == 3:
+        p[0] = Node("ID", [p[1], p[2]])
+    else:
+        p[0] = Node("factor", p[1])
 
 
 def p_type(p):
@@ -81,17 +82,17 @@ def p_type(p):
         | STRING
     """
 
-    p[0] = p[1]
+    p[0] = Node("type", leaf=p[1])
     pass
 
 
 def p_return(p):
     """
     return : RETURN expression SEMICOLON
-                | RETURN SEMICOLON
+            | RETURN SEMICOLON
     """
-
-    p[0] = p[2]
+    p[0] = Node("return", [p[2]])
+    p[0] = Node("return", leaf=p[1])
 
 
 def p_adress(p):
@@ -102,7 +103,7 @@ def p_adress(p):
             | term ADRESS LITSTRING SEMICOLON
     """
 
-    p[0] = p[3]
+    p[0] = Node("adress", [p[1], p[3]])
 
 
 def p_condition(p):
@@ -123,7 +124,7 @@ def p_condition(p):
         | NOT condition
 
     """
-    p[0] = p[1]
+    p[0] = Node("condition", [p[1], p[3]], p[2])
     pass
 
 
@@ -138,7 +139,7 @@ def p_statement(p):
         | adress
         | return
     """
-    p[0] = p[1]
+    p[0] = Node("statement", [p[1]])
 
 
 def p_if(p):
@@ -146,7 +147,7 @@ def p_if(p):
     | if elseif
     | if else"""
 
-    p[0] = p[len(p) - 1]
+    p[0] = Node("if", [p[3], p[5]])
 
 
 def p_elseif(p):
@@ -155,41 +156,36 @@ def p_elseif(p):
     | elseif else
     """
 
-    p[0] = p[len(p) - 1]
+    p[0] = Node("elseif", [p[3], p[5]])
 
 
 def p_else(p):
     "else : ELSE scope"
-    p[0] = p[2]
+    p[0] = Node("else", [p[2]])
 
 
 # TODO print que printa variavel com string print("preco: ", x);
 def p_print(p):
     """print : PRINT LPAREN LITSTRING RPAREN SEMICOLON
     | PRINT LPAREN expression RPAREN SEMICOLON"""
-    p[0] = p[3]
-
-
-def p_term_factor(p):
-    "term : factor"
-    p[0] = p[1]
+    p[0] = Node("print", leaf=p[3])
 
 
 def p_factor_num(p):
     "factor : NUMBER"
-    p[0] = p[1]
+    p[0] = Node("NUMBER", leaf=p[1])
 
 
 def p_factor_expr(p):
     "factor : LPAREN expression RPAREN"
-    p[0] = p[2]
+    p[0] = Node("expression", [p[2]])
 
 
 def p_for(p):
     """
     for : FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope
     """
-    p[0] = p[9]
+    p[0] = Node("for", [p[3], p[5], p[7], p[9]])
 
 
 def p_for_initializer(p):
@@ -197,7 +193,7 @@ def p_for_initializer(p):
     for_initilizer : adress
 
     """
-    p[0] = p[1]
+    p[0] = Node("for_initilizer", [p[1]])
 
 
 def p_while(p):
@@ -205,7 +201,7 @@ def p_while(p):
     while : WHILE LPAREN condition RPAREN scope
 
     """
-    p[0] = p[5]
+    p[0] = Node("while", [p[3], p[5]])
 
 
 def p_error(p):
@@ -224,4 +220,4 @@ while True:
     if not s:
         continue
     result = par.parse(s)
-    print(result)
+    result.print_tree()
