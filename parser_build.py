@@ -84,7 +84,7 @@ def p_instance(p):
         if p[1] in variables:
             p[0] = Node("ID", leaf=p[1])
         else:
-            print("Variavel nao declarada")
+            print("Variavel não declarada")
             exit()
 
 
@@ -104,26 +104,28 @@ def p_type(p):
     pass
 
 
+def p_litstring(p):
+    """
+    litstring : LITSTRING
+    """
+    p[0] = Node("STRING", leaf=p[1])
+
+
 def p_adress(p):
     """
     adress : instance ADRESS factor SEMICOLON
-            | instance ADRESS LITSTRING SEMICOLON
+            | instance ADRESS litstring SEMICOLON
             | instance ADRESS expression SEMICOLON
     """
 
     if p[3].type == "NUMBER" and variables[p[1].leaf] != "string":
         instance_type = int if (variables[p[1].leaf]) else float
-        if isinstance(p[3].leaf, instance_type):
-            print("Perfeito primeiro")
-
-        else:
-            print("Erro de tipo primeiro")
+        if not isinstance(p[3].leaf, instance_type):
+            print("Erro de tipo")
             exit()
     elif variables[p[1].leaf] == "string":
-        if p[3].type == "STRING":
-            print("Perfeito segundo")
-        else:
-            print("Erro de tipo segundo")
+        if p[3].type != "STRING":
+            print("Erro de tipo")
             exit()
     else:
         print("Erro de tipo terceiro")
@@ -178,7 +180,6 @@ def p_statement(p):
     """
     statement : expression SEMICOLON
         | if
-        | else
         | for
         | while
         | print
@@ -199,41 +200,39 @@ def p_param(p):
         p[0] = Node("param", [p[1], p[3]], p[2])
 
 
-# TODO fix if{} else {}elseif
+# TODO else printando antes do elseif
 def p_if(p):
     """if : IF LPAREN condition RPAREN scope
-    | if elseif"""
+    | IF LPAREN condition RPAREN scope elseif
+    | IF LPAREN condition RPAREN scope ELSE scope"""
 
-    if len(p) > 3:
+    if len(p) == 5:
         p[0] = Node("if", [p[3], p[5]])
+    elif len(p) == 6:
+        p[0] = Node("if", [p[3], p[5], Node("elseif", [p[len(p) - 1]])])
     else:
-        p[0] = Node("if", [p[2]])
+        p[0] = Node("if", [p[3], p[5], Node("else", [p[len(p) - 1]])])
 
 
 def p_elseif(p):
     """elseif : ELSEIF LPAREN condition RPAREN scope
-    | elseif elseif
-    | else
+    | ELSEIF LPAREN condition RPAREN scope elseif
+    | ELSEIF LPAREN condition RPAREN scope ELSE scope
     """
 
-    if len(p) > 3:
+    if len(p) == 5:
         p[0] = Node("elseif", [p[3], p[5]])
-    elif len(p) > 2:
-        p[0] = Node("elseif", [p[2]])
+    elif len(p) == 6:
+        p[0] = Node("elseif", [p[3], p[5], Node("elseif", [p[len(p) - 1]])])
     else:
-        p[0] = Node("elseif", [p[1]])
-
-
-def p_else(p):
-    "else : ELSE scope"
-    p[0] = Node("else", [p[2]])
+        p[0] = Node("elseif", [p[3], p[5], Node("else", [p[len(p) - 1]])])
 
 
 # TODO verificar prints com variaveis
 def p_print(p):
-    """print : PRINT LPAREN LITSTRING RPAREN SEMICOLON
+    """print : PRINT LPAREN litstring RPAREN SEMICOLON
     | PRINT LPAREN expression RPAREN SEMICOLON
-    | PRINT LPAREN LITSTRING COMMA param RPAREN SEMICOLON"""
+    | PRINT LPAREN litstring COMMA param RPAREN SEMICOLON"""
 
     if (len(p)) == 6:
         p[0] = Node("print", leaf=p[3])
