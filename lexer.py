@@ -85,13 +85,16 @@ class LexicalAnalysis(object):
         return t
 
     def t_LITSTRING(self, t):
-        r"\"([^\']{2, })\" "
+        r"\'([^\']{2,})\'"
         return t
 
     def t_ID(self, t):
         r"[a-zA-Z_][a-zA-Z_0-9]*"
-        t.type = self.reserved.get(t.value, "ID")
-        return t
+        if t.value[0] == '"' or t.value[0] == "'":
+            return self.t_STRING_LITERAL(t)
+        else:
+            t.type = self.reserved.get(t.value, "ID")
+            return t
 
     def t_comment(self, t):
         r"\#.*"

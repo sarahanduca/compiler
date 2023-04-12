@@ -5,7 +5,6 @@ from lexer import LexicalAnalysis
 code_input = open("test_input.txt", "r")
 tokens = LexicalAnalysis()
 tokens = tokens.tokens
-# {"x": "INT", y: "INT", z: "INT"}
 variables = {}
 
 
@@ -79,12 +78,14 @@ def p_instance(p):
             print("Variavel ja declarada")
             exit()
         else:
+            p[0] = Node("type", [p[1], Node("ID", leaf=p[2])], p[2])
             variables[p[2]] = p[1].leaf
-
-    if len(p) == 3:
-        p[0] = Node("type", [p[1], Node("ID", leaf=p[2])])
     else:
-        p[0] = Node("ID", leaf=p[1])
+        if p[1] in variables:
+            p[0] = Node("ID", leaf=p[1])
+        else:
+            print("Variavel nao declarada")
+            exit()
 
 
 def p_factor(p):
@@ -110,20 +111,23 @@ def p_adress(p):
             | instance ADRESS expression SEMICOLON
     """
 
-    print(p[1].children[0].leaf, p[3])
-    if p[3] == "NUMBER" and p[1].children[0].leaf != "string":
-        instance_type = int if (p[1].children[0].leaf == "int") else float
+    if p[3].type == "NUMBER" and variables[p[1].leaf] != "string":
+        instance_type = int if (variables[p[1].leaf]) else float
         if isinstance(p[3].leaf, instance_type):
             print("Perfeito primeiro")
+
         else:
             print("Erro de tipo primeiro")
             exit()
-    elif p[1].children[0].leaf == "string":
-        if p[3] == "LITSTRING":
+    elif variables[p[1].leaf] == "string":
+        if p[3].type == "STRING":
             print("Perfeito segundo")
         else:
             print("Erro de tipo segundo")
             exit()
+    else:
+        print("Erro de tipo terceiro")
+        exit()
 
     p[0] = Node("adress", [p[1], p[3]])
 
@@ -195,21 +199,29 @@ def p_param(p):
         p[0] = Node("param", [p[1], p[3]], p[2])
 
 
+# TODO fix if{} else {}elseif
 def p_if(p):
     """if : IF LPAREN condition RPAREN scope
-    | if elseif
-    | if else"""
+    | if elseif"""
 
-    p[0] = Node("if", [p[3], p[5]])
+    if len(p) > 3:
+        p[0] = Node("if", [p[3], p[5]])
+    else:
+        p[0] = Node("if", [p[2]])
 
 
 def p_elseif(p):
     """elseif : ELSEIF LPAREN condition RPAREN scope
     | elseif elseif
-    | elseif else
+    | else
     """
 
-    p[0] = Node("elseif", [p[3], p[5]])
+    if len(p) > 3:
+        p[0] = Node("elseif", [p[3], p[5]])
+    elif len(p) > 2:
+        p[0] = Node("elseif", [p[2]])
+    else:
+        p[0] = Node("elseif", [p[1]])
 
 
 def p_else(p):
@@ -217,7 +229,7 @@ def p_else(p):
     p[0] = Node("else", [p[2]])
 
 
-# TODO verificar regex de string
+# TODO verificar prints com variaveis
 def p_print(p):
     """print : PRINT LPAREN LITSTRING RPAREN SEMICOLON
     | PRINT LPAREN expression RPAREN SEMICOLON
@@ -229,6 +241,7 @@ def p_print(p):
         p[0] = Node("print", [p[5]], p[3])
 
 
+# TODO simplesmente nao esta rodando
 def p_for(p):
     """
     for : FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope

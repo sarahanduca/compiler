@@ -1,3 +1,9 @@
 int main(){
-	int x = 2.8;
+  int x = 2;
+  if(x < 4){
+	print('super legal');
+  }else{
+	int y = 2;
+  }
 }
+
