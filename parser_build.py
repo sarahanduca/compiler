@@ -2,6 +2,7 @@ import ply.yacc as yacc
 from tree import Node
 from lexer import LexicalAnalysis
 
+code_input = open("test_input.txt", "r")
 tokens = LexicalAnalysis()
 tokens = tokens.tokens
 
@@ -38,7 +39,7 @@ def p_scope(p):
     p[0] = Node("scope", [p[2]])
 
 
-def p_op_expression(p):
+def p_expression(p):
     """expression : expression PLUS expression
     | expression MINUS expression
     | expression TIMES expression
@@ -47,20 +48,7 @@ def p_op_expression(p):
     | term"""
 
     if len(p) == 2:
-        p[0] = p[1]
-
-    if p[2] == "+":
-        p[0] = p[1] + p[3]
-
-    elif p[2] == "-":
-        p[0] = p[1] - p[3]
-
-    elif p[2] == "*":
-        p[0] = p[1] * p[3]
-
-    elif p[2] == "/":
-        p[0] = p[1] / p[3]
-
+        p[0] = Node("expression", [p[1]])
     else:
         p[0] = Node("expression", [p[1], p[3]], p[2])
 
@@ -70,9 +58,9 @@ def p_term(p):
     | factor
     """
     if len(p) == 3:
-        p[0] = Node("ID", [p[1], p[2]])
+        p[0] = Node("type", [Node("ID", leaf=p[2])])
     else:
-        p[0] = Node("factor", p[1])
+        p[0] = Node("factor", [p[1]])
 
 
 def p_type(p):
@@ -99,7 +87,6 @@ def p_adress(p):
     """
     adress : term ADRESS expression SEMICOLON
             | term ADRESS term SEMICOLON
-            | term ADRESS NUMBER SEMICOLON
             | term ADRESS LITSTRING SEMICOLON
     """
 
@@ -142,6 +129,17 @@ def p_statement(p):
     p[0] = Node("statement", [p[1]])
 
 
+def p_param(p):
+    """
+    param : param COMMA param
+        | term
+    """
+    if len(p) == 2:
+        p[0] = Node("param", [p[1]])
+    else:
+        p[0] = Node("param", [p[1], p[3]], p[2])
+
+
 def p_if(p):
     """if : IF LPAREN condition RPAREN scope
     | if elseif
@@ -164,21 +162,19 @@ def p_else(p):
     p[0] = Node("else", [p[2]])
 
 
-# TODO print que printa variavel com string print("preco: ", x);
 def p_print(p):
     """print : PRINT LPAREN LITSTRING RPAREN SEMICOLON
-    | PRINT LPAREN expression RPAREN SEMICOLON"""
-    p[0] = Node("print", leaf=p[3])
+    | PRINT LPAREN LITSTRING COMMA param RPAREN SEMICOLON"""
+
+    if (len(p)) == 6:
+        p[0] = Node("print", leaf=p[3])
+    else:
+        p[0] = Node("print", [p[5]], p[3])
 
 
-def p_factor_num(p):
+def p_factor(p):
     "factor : NUMBER"
     p[0] = Node("NUMBER", leaf=p[1])
-
-
-def p_factor_expr(p):
-    "factor : LPAREN expression RPAREN"
-    p[0] = Node("expression", [p[2]])
 
 
 def p_for(p):
@@ -212,12 +208,6 @@ def p_error(p):
 
 par = yacc.yacc()
 
-while True:
-    try:
-        s = input("exp > ")
-    except EOFError:
-        break
-    if not s:
-        continue
-    result = par.parse(s)
-    result.print_tree()
+s = code_input.read()
+result = par.parse(s)
+result.print_tree()
