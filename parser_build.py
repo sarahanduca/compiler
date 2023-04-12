@@ -5,6 +5,7 @@ from lexer import LexicalAnalysis
 code_input = open("test_input.txt", "r")
 tokens = LexicalAnalysis()
 tokens = tokens.tokens
+variables = {}
 
 
 precedence = (
@@ -32,7 +33,7 @@ def p_start(p):
 
 def p_scope(p):
     """
-    scope : LBRAKETS statement RBRAKETS
+    scope : LBRAKETS multiple_statements RBRAKETS
         | LBRAKETS expression RBRAKETS
 
     """
@@ -113,6 +114,17 @@ def p_condition(p):
     """
     p[0] = Node("condition", [p[1], p[3]], p[2])
     pass
+
+
+def p_multiple_statements(p):
+    """
+    multiple_statements : multiple_statements statement
+    | statement
+    """
+    if len(p) == 2:
+        p[0] = Node("multiple_statements", [p[1]])
+    else:
+        p[0] = Node("multiple_statements", [p[1], p[2]])
 
 
 def p_statement(p):

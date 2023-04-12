@@ -3,5 +3,6 @@ int main(){
 		while(8 < 10){
 			int x = 2;
 		}
+		print("abacaxi");
 	}
 }
