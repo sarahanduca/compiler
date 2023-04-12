@@ -77,12 +77,15 @@ class LexicalAnalysis(object):
     t_SEMICOLON = r"\;"
 
     def t_NUMBER(self, t):
-        r"\d+"
-        t.value = int(t.value)
+        r"(?!\d*\'[^\']*)(\d+\.?\d*|\.\d+)"
+        if "." in t.value:
+            t.value = float(t.value)
+        else:
+            t.value = int(t.value)
         return t
 
     def t_LITSTRING(self, t):
-        r"\"([^\']{2,})\" "
+        r"\"([^\']{2, })\" "
         return t
 
     def t_ID(self, t):

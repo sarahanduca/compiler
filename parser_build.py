@@ -5,7 +5,8 @@ from lexer import LexicalAnalysis
 code_input = open("test_input.txt", "r")
 tokens = LexicalAnalysis()
 tokens = tokens.tokens
-variables = []
+# {"x": "INT", y: "INT", z: "INT"}
+variables = {}
 
 
 precedence = (
@@ -54,7 +55,6 @@ def p_expression(p):
         p[0] = Node("expression", [p[1], p[3]], p[2])
 
 
-# TODO add ID and instance function
 def p_term(p):
     """term : instance
     | factor
@@ -73,8 +73,16 @@ def p_instance(p):
      | ID
 
     """
+
     if len(p) == 3:
-        p[0] = Node("type", [Node("ID", leaf=p[2])])
+        if p[2] in variables:
+            print("Variavel ja declarada")
+            exit()
+        else:
+            variables[p[2]] = p[1].leaf
+
+    if len(p) == 3:
+        p[0] = Node("type", [p[1], Node("ID", leaf=p[2])])
     else:
         p[0] = Node("ID", leaf=p[1])
 
@@ -97,10 +105,25 @@ def p_type(p):
 
 def p_adress(p):
     """
-    adress : term ADRESS expression SEMICOLON
-            | term ADRESS term SEMICOLON
-            | term ADRESS LITSTRING SEMICOLON
+    adress : instance ADRESS factor SEMICOLON
+            | instance ADRESS LITSTRING SEMICOLON
+            | instance ADRESS expression SEMICOLON
     """
+
+    print(p[1].children[0].leaf, p[3])
+    if p[3] == "NUMBER" and p[1].children[0].leaf != "string":
+        instance_type = int if (p[1].children[0].leaf == "int") else float
+        if isinstance(p[3].leaf, instance_type):
+            print("Perfeito primeiro")
+        else:
+            print("Erro de tipo primeiro")
+            exit()
+    elif p[1].children[0].leaf == "string":
+        if p[3] == "LITSTRING":
+            print("Perfeito segundo")
+        else:
+            print("Erro de tipo segundo")
+            exit()
 
     p[0] = Node("adress", [p[1], p[3]])
 
@@ -194,8 +217,10 @@ def p_else(p):
     p[0] = Node("else", [p[2]])
 
 
+# TODO verificar regex de string
 def p_print(p):
     """print : PRINT LPAREN LITSTRING RPAREN SEMICOLON
+    | PRINT LPAREN expression RPAREN SEMICOLON
     | PRINT LPAREN LITSTRING COMMA param RPAREN SEMICOLON"""
 
     if (len(p)) == 6:
