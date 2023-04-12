@@ -54,14 +54,25 @@ def p_expression(p):
         p[0] = Node("expression", [p[1], p[3]], p[2])
 
 
+# TODO add ID and instance function
 def p_term(p):
-    """term : type ID
+    """term : ID
     | factor
     """
     if len(p) == 3:
         p[0] = Node("type", [Node("ID", leaf=p[2])])
     else:
         p[0] = Node("factor", [p[1]])
+
+
+def p_instance(p):
+    """
+    instance : type term
+
+    """
+    variables = None
+    variables = p[2].leaf
+    variables[variables] = p[1].leaf
 
 
 def p_type(p):
@@ -223,3 +234,4 @@ par = yacc.yacc()
 s = code_input.read()
 result = par.parse(s)
 result.print_tree()
+print(variables)

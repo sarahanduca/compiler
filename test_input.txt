@@ -4,5 +4,6 @@ int main(){
 			int x = 2;
 		}
 		print("abacaxi");
+		int y = 2;
 	}
 }
