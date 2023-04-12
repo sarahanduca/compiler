@@ -4,6 +4,7 @@ from lexer import LexicalAnalysis
 tokens = LexicalAnalysis()
 tokens = tokens.tokens
 
+
 precedence = (
     ("left", "OR"),
     ("left", "AND"),
@@ -41,9 +42,13 @@ def p_op_expression(p):
     | expression MINUS expression
     | expression TIMES expression
     | expression DIVIDE expression
-    | LPAREN expression RPAREN"""
+    | LPAREN expression RPAREN
+    | term"""
 
-    if p[2] == "+":
+    if len(p) == 2:
+        p[0] = p[1]
+
+    elif p[2] == "+":
         p[0] = p[1] + p[3]
 
     elif p[2] == "-":
@@ -59,9 +64,9 @@ def p_op_expression(p):
         p[0] = p[2]
 
 
-def p_expression_term(p):
-    "expression : term"
-    p[0] = p[1]
+# def p_expression_term(p):
+#     "expression : term"
+#     p[0] = p[1]
 
 
 def p_term(p):
