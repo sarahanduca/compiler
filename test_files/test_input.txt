@@ -1,0 +1,18 @@
+int main(){
+    if(2 < 1 and 5 != 9){
+        int z = 2;
+    }elseif(10000 < 10){
+        int z = 2;
+    }
+
+    if(0.9 != 4){
+        int z = 2;
+    }elseif(1 != 0){
+        int z = 2;
+    }else{
+        float x = 10.8;
+    }
+
+
+}
+

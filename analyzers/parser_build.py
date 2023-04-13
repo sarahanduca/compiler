@@ -1,14 +1,18 @@
 import ply.yacc as yacc
-from tree import Node
-from lexer import LexicalAnalysis
+from utils.tree import Node
+from analyzers.lexer import LexicalAnalysis
 
-code_input = open("test_input.txt", "r")
 tokens = LexicalAnalysis()
 tokens = tokens.tokens
-# variables = {x: {type: 'int', scope: 10}}
 variables = {}
 scope_id = 0
 scope_stack = []
+
+
+def display_error(var1, var2):
+    print("Erro semantico, variveis atribuidas de forma errada.")
+    print(f"Tipo {var1} recebendo {var2}.")
+    exit()
 
 
 precedence = (
@@ -53,7 +57,6 @@ def p_scope(p):
     scope_stack.pop()
 
 
-#TODO - validar as variaveis
 def p_expression(p):
     """expression : expression PLUS expression
     | expression MINUS expression
@@ -62,8 +65,24 @@ def p_expression(p):
     | LPAREN expression RPAREN
     | term"""
 
+    if len(p) > 2 and p[1] != "(":
+        if p[1].validate_type("string", variables) or p[3].validate_type(
+            "string", variables
+        ):
+            print("String atribuida a um dos valores da expressão.")
+            exit()
+
+        elif p[2] == "/":
+            if p[3].is_zero():
+                print("Divisão por zero.")
+                exit()
+
     if len(p) == 2:
         p[0] = Node("expression", [p[1]])
+
+    elif p[1] == "(":
+        p[0] = Node("expression", [Node("expression", [p[2]])], [p[1], p[3]])
+
     else:
         p[0] = Node("expression", [p[1], p[3]], p[2])
 
@@ -88,19 +107,19 @@ def p_instance(p):
     if len(p) == 3:
         for variable in variables:
             if p[2] == variable[0] and variable[1] in scope_stack:
-                print("Variavel ja declarada")
+                print("Variavel já declarada")
                 exit()
         p[0] = Node("type", [p[1], Node("ID", leaf=p[2])], p[2])
         variables[(p[2], scope_stack[-1])] = p[1].leaf
 
     else:
-        print(variables)
         for variable in variables:
             if p[1] == variable[0] and variable[1] in scope_stack:
                 p[0] = Node("ID", [Node("ID_Scope", leaf=variable[1])], leaf=p[1])
                 return
+
         if p[1] not in variables:
-            print("Variavel nao declarada")
+            print("Variavel não declarada")
             exit()
 
 
@@ -116,7 +135,7 @@ def p_type(p):
         | STRING
     """
 
-    p[0] = Node("type", leaf=p[1])
+    p[0] = Node("var_type", leaf=p[1])
     pass
 
 
@@ -137,23 +156,25 @@ def p_adress(p):
         variable_type = p[1].children[0].leaf
     else:
         variable_type = variables[(p[1].leaf, p[1].children[0].leaf)]
-    if p[3].type == "NUMBER":
-        if variable_type == "string":
-            print("Erro de tipo - STRING recebendo NUMBER")
-            exit()
-        else:
-            instance_type = int if (variable_type == "int") else float
-            if not isinstance(p[3].leaf, instance_type):
-                print("Erro de tipo - NUMBER recebendo STRING")
-                exit()
-    elif p[3].type == "STRING":
-        if variable_type != "string":
-            print("Erro de tipo - STRING recebendo NUMBER só q outro")
-            exit()
-    elif p[3].type == "expression":
-        if not p[3].validate_all_leafs(variable_type, variables):
-            print("Erro de tipooooo")
-            exit()
+
+    try:
+        if p[3].type == "NUMBER":
+            if variable_type == "string":
+                raise Exception
+            else:
+                instance_type = int if (variable_type == "int") else float
+                if not isinstance(p[3].leaf, instance_type):
+                    raise Exception
+
+        elif p[3].type == "STRING":
+            if variable_type != "string":
+                raise Exception
+
+        elif p[3].type == "expression":
+            if not p[3].validate_all_leafs(variable_type, variables):
+                raise Exception
+    except:
+        display_error(variable_type, p[3].leaf)
 
     p[0] = Node("adress", [p[1], p[3]])
 
@@ -165,7 +186,6 @@ def p_return(p):
     """
     p[0] = Node("return", [p[2]])
     p[0] = Node("return", leaf=p[1])
-
 
 
 def p_condition(p):
@@ -188,11 +208,10 @@ def p_condition(p):
 
     if p[3].type != "RPAREN":
         if p[1].type != "NOT":
-            if p[1].validate_all_leafs("string", variables) or p[3].validate_all_leafs(
+            if p[1].validate_type("string", variables) or p[3].validate_type(
                 "string", variables
             ):
-                
-                print("Erro de tipo!!!", p[3].validate_all_leafs("string", variables), p[1].validate_all_leafs("string", variables))
+                print("String atribuida a um dos valores da condição.")
                 exit()
 
     p[0] = Node("condition", [p[1], p[3]], p[2])
@@ -242,8 +261,10 @@ def p_if(p):
 
     if len(p) == 5:
         p[0] = Node("if", [p[3], p[5]])
+
     elif len(p) == 6:
         p[0] = Node("if", [p[3], p[5], Node("elseif", [p[len(p) - 1]])])
+
     else:
         p[0] = Node("if", [p[3], p[5], Node("else", [p[len(p) - 1]])])
 
@@ -256,8 +277,10 @@ def p_elseif(p):
 
     if len(p) == 5:
         p[0] = Node("elseif", [p[3], p[5]])
+
     elif len(p) == 6:
         p[0] = Node("elseif", [p[3], p[5], Node("elseif", [p[len(p) - 1]])])
+
     else:
         p[0] = Node("elseif", [p[3], p[5], Node("else", [p[len(p) - 1]])])
 
@@ -284,6 +307,9 @@ def p_for_initializer(p):
     """
     for_initilizer : adress
     """
+    if p[1].validate_type("string", variables):
+        print("Inicializador de for não pode ser do tipo string.")
+        exit()
     p[0] = Node("for_initilizer", [p[1]])
 
 
@@ -300,9 +326,7 @@ def p_error(p):
     exit(1)
 
 
-par = yacc.yacc()
-
-s = code_input.read()
-result = par.parse(s)
-result.print_tree()
-print(variables)
+def analyze_code(code_file):
+    par = yacc.yacc()
+    result = par.parse(code_file)
+    result.print_tree()

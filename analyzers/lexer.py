@@ -85,7 +85,7 @@ class LexicalAnalysis(object):
         return t
 
     def t_LITSTRING(self, t):
-        r"\'([^\']{2,})\'"
+        r"\'([^\']{1,})\'"
         return t
 
     def t_ID(self, t):
