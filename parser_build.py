@@ -81,6 +81,7 @@ def p_instance(p):
         else:
             p[0] = Node("type", [p[1], Node("ID", leaf=p[2])], p[2])
             variables[p[2]] = p[1].leaf
+
     else:
         if p[1] in variables:
             p[0] = Node("ID", leaf=p[1])
