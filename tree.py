@@ -33,6 +33,8 @@ class Node:
                 return False
         elif self.type == type:
             return True
+        elif self.type != type:
+            return False
         else:
             for child in self.children:
                 if not child.validate_all_leafs(type, variables):

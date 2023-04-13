@@ -53,6 +53,7 @@ def p_scope(p):
     scope_stack.pop()
 
 
+#TODO - validar as variaveis
 def p_expression(p):
     """expression : expression PLUS expression
     | expression MINUS expression
@@ -166,7 +167,7 @@ def p_return(p):
     p[0] = Node("return", leaf=p[1])
 
 
-# TODO condição com variavel e número
+
 def p_condition(p):
     """
     condition : expression OR expression
@@ -190,7 +191,8 @@ def p_condition(p):
             if p[1].validate_all_leafs("string", variables) or p[3].validate_all_leafs(
                 "string", variables
             ):
-                print("Erro de tipo!!!", p[3].validate_all_leafs("string", variables))
+                
+                print("Erro de tipo!!!", p[3].validate_all_leafs("string", variables), p[1].validate_all_leafs("string", variables))
                 exit()
 
     p[0] = Node("condition", [p[1], p[3]], p[2])
