@@ -243,9 +243,9 @@ def p_print(p):
 # TODO simplesmente nao esta rodando
 def p_for(p):
     """
-    for : FOR LPAREN for_initilizer SEMICOLON condition SEMICOLON expression RPAREN scope
+    for : FOR LPAREN for_initilizer condition SEMICOLON expression RPAREN scope
     """
-    p[0] = Node("for", [p[3], p[5], p[7], p[9]])
+    p[0] = Node("for", [p[3], p[4], p[6], p[8]])
 
 
 def p_for_initializer(p):

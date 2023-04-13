@@ -1,11 +1,7 @@
 int main(){
   int x = 2;
-  if(x < 2){
-	print('super legal');
-  }elseif(4<2){
-	5 + 2;
-  }else{
-	int y = 2;
+  while( x<= 10){
+	4+1;
   }
 }
 
