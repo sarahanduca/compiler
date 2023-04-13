@@ -1,5 +1,12 @@
 int main(){
-  int x = 2;
-  
+  float x = 2.0;
+  float y = 10.5;
+
+  if(5 < 10){
+    print('agusg');
+    for(int i = 10; i < 10; i+1){
+      x = 4 + 1;
+    }
+  }
 }
 

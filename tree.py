@@ -1,3 +1,6 @@
+TYPES = ["int", "float", "string"]
+
+
 class Node:
     def __init__(self, type, children=None, leaf=None):
         self.type = type
@@ -12,7 +15,27 @@ class Node:
 
     def print_tree(self, level=0):
         print("  " * level + str(self))
+        if self == None:
+            return
         if self.leaf:
             print("  " * (level + 1) + str(self.leaf))
         for child in self.children:
             child.print_tree(level + 1)
+
+    def validate_all_leafs(self, type, variables):
+        if (self.type != "ID") and (self.leaf is not None) and (self.type != "NUMBER"):
+            return False
+        elif self.type == "ID":
+            scope_id = self.children[0].leaf
+            variable_type = variables[(self.leaf, scope_id)]
+
+            if variable_type != type and type in TYPES:
+                return False
+        elif self.type == type:
+            return True
+        else:
+            for child in self.children:
+                if not child.validate_all_leafs(type, variables):
+                    return False
+
+        return True

@@ -5,8 +5,10 @@ from lexer import LexicalAnalysis
 code_input = open("test_input.txt", "r")
 tokens = LexicalAnalysis()
 tokens = tokens.tokens
-# variables = {x: {type: 'int', scope: 0}}
+# variables = {x: {type: 'int', scope: 10}}
 variables = {}
+scope_id = 0
+scope_stack = []
 
 
 precedence = (
@@ -32,13 +34,23 @@ def p_start(p):
     pass
 
 
+def p_new_scope(p):
+    """
+    new_scope :
+    """
+    global scope_id
+    scope_stack.append(scope_id)
+    scope_id += 1
+    pass
+
+
 def p_scope(p):
     """
-    scope : LBRAKETS multiple_statements RBRAKETS
-        | LBRAKETS expression RBRAKETS
-
+    scope : new_scope LBRAKETS multiple_statements RBRAKETS
+          | new_scope LBRAKETS expression RBRAKETS
     """
-    p[0] = Node("scope", [p[2]])
+    p[0] = Node("scope", [p[3]])
+    scope_stack.pop()
 
 
 def p_expression(p):
@@ -70,23 +82,24 @@ def p_term(p):
 def p_instance(p):
     """
     instance : type ID
-     | ID
-
+            | ID
     """
-
     if len(p) == 3:
-        if p[2] in variables:
-            print("Variavel ja declarada")
-            exit()
-        else:
-            p[0] = Node("type", [p[1], Node("ID", leaf=p[2])], p[2])
-            variables[p[2]] = p[1].leaf
+        for variable in variables:
+            if p[2] == variable[0] and variable[1] in scope_stack:
+                print("Variavel ja declarada")
+                exit()
+        p[0] = Node("type", [p[1], Node("ID", leaf=p[2])], p[2])
+        variables[(p[2], scope_stack[-1])] = p[1].leaf
 
     else:
-        if p[1] in variables:
-            p[0] = Node("ID", leaf=p[1])
-        else:
-            print("Variavel não declarada")
+        print(variables)
+        for variable in variables:
+            if p[1] == variable[0] and variable[1] in scope_stack:
+                p[0] = Node("ID", [Node("ID_Scope", leaf=variable[1])], leaf=p[1])
+                return
+        if p[1] not in variables:
+            print("Variavel nao declarada")
             exit()
 
 
@@ -113,26 +126,33 @@ def p_litstring(p):
     p[0] = Node("STRING", leaf=p[1])
 
 
-# TODO variavel recebe variavel ja declarada
 def p_adress(p):
     """
     adress : instance ADRESS factor SEMICOLON
             | instance ADRESS litstring SEMICOLON
             | instance ADRESS expression SEMICOLON
     """
-
-    if p[3].type == "NUMBER" and variables[p[1].leaf] != "string":
-        instance_type = int if (variables[p[1].leaf]) else float
-        if not isinstance(p[3].leaf, instance_type):
-            print("Erro de tipo")
-            exit()
-    elif variables[p[1].leaf] == "string":
-        if p[3].type != "STRING":
-            print("Erro de tipo")
-            exit()
+    if p[1].type == "type":
+        variable_type = p[1].children[0].leaf
     else:
-        print("Erro de tipo terceiro")
-        exit()
+        variable_type = variables[(p[1].leaf, p[1].children[0].leaf)]
+    if p[3].type == "NUMBER":
+        if variable_type == "string":
+            print("Erro de tipo - STRING recebendo NUMBER")
+            exit()
+        else:
+            instance_type = int if (variable_type == "int") else float
+            if not isinstance(p[3].leaf, instance_type):
+                print("Erro de tipo - NUMBER recebendo STRING")
+                exit()
+    elif p[3].type == "STRING":
+        if variable_type != "string":
+            print("Erro de tipo - STRING recebendo NUMBER só q outro")
+            exit()
+    elif p[3].type == "expression":
+        if not p[3].validate_all_leafs(variable_type, variables):
+            print("Erro de tipooooo")
+            exit()
 
     p[0] = Node("adress", [p[1], p[3]])
 
@@ -146,6 +166,7 @@ def p_return(p):
     p[0] = Node("return", leaf=p[1])
 
 
+# TODO condição com variavel e número
 def p_condition(p):
     """
     condition : expression OR expression
@@ -162,8 +183,16 @@ def p_condition(p):
         | expression LESSEQUAL expression
         | LPAREN condition RPAREN
         | NOT condition
-
     """
+
+    if p[3].type != "RPAREN":
+        if p[1].type != "NOT":
+            if p[1].validate_all_leafs("string", variables) or p[3].validate_all_leafs(
+                "string", variables
+            ):
+                print("Erro de tipo!!!", p[3].validate_all_leafs("string", variables))
+                exit()
+
     p[0] = Node("condition", [p[1], p[3]], p[2])
     pass
 
@@ -189,6 +218,7 @@ def p_statement(p):
         | adress
         | return
     """
+
     p[0] = Node("statement", [p[1]])
 
 
@@ -203,7 +233,6 @@ def p_param(p):
         p[0] = Node("param", [p[1], p[3]], p[2])
 
 
-# TODO else printando antes do elseif
 def p_if(p):
     """if : IF LPAREN condition RPAREN scope
     | IF LPAREN condition RPAREN scope elseif
@@ -231,7 +260,6 @@ def p_elseif(p):
         p[0] = Node("elseif", [p[3], p[5], Node("else", [p[len(p) - 1]])])
 
 
-# TODO verificar prints com variaveis
 def p_print(p):
     """print : PRINT LPAREN litstring RPAREN SEMICOLON
     | PRINT LPAREN expression RPAREN SEMICOLON
@@ -253,7 +281,6 @@ def p_for(p):
 def p_for_initializer(p):
     """
     for_initilizer : adress
-
     """
     p[0] = Node("for_initilizer", [p[1]])
 
@@ -261,7 +288,6 @@ def p_for_initializer(p):
 def p_while(p):
     """
     while : WHILE LPAREN condition RPAREN scope
-
     """
     p[0] = Node("while", [p[3], p[5]])
 
