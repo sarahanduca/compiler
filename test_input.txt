@@ -1,7 +1,13 @@
 int main(){
   int x = 2;
+  int y = 10;
+
   while( x<= 10){
-	4+1;
+	int a = 100;
+  }
+  
+  if(y < 2){
+	int a = 8;
   }
 }
 

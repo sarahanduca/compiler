@@ -5,6 +5,7 @@ from lexer import LexicalAnalysis
 code_input = open("test_input.txt", "r")
 tokens = LexicalAnalysis()
 tokens = tokens.tokens
+# variables = {x: {type: 'int', scope: 0}}
 variables = {}
 
 
@@ -111,6 +112,7 @@ def p_litstring(p):
     p[0] = Node("STRING", leaf=p[1])
 
 
+# TODO variavel recebe variavel ja declarada
 def p_adress(p):
     """
     adress : instance ADRESS factor SEMICOLON
@@ -240,7 +242,6 @@ def p_print(p):
         p[0] = Node("print", [p[5]], p[3])
 
 
-# TODO simplesmente nao esta rodando
 def p_for(p):
     """
     for : FOR LPAREN for_initilizer condition SEMICOLON expression RPAREN scope
